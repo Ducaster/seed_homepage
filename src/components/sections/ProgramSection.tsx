@@ -26,8 +26,8 @@ export default function ProgramSection() {
           {PROGRAMS.map((program, index) => {
             const Icon = iconMap[program.icon];
             return (
-              <AnimateOnScroll key={program.id} delay={index * 0.15}>
-                <div className="group relative bg-white rounded-2xl border border-seed-earth-200 p-8 hover:border-seed-green-500 hover:shadow-xl hover:shadow-seed-green-600/5 transition-all duration-300">
+              <AnimateOnScroll key={program.id} delay={index * 0.15} className="h-full">
+                <div className="h-full group relative bg-white rounded-2xl border border-seed-earth-200 p-8 hover:border-seed-green-500 hover:shadow-xl hover:shadow-seed-green-600/5 transition-all duration-300">
                   {/* 아이콘 */}
                   <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-seed-green-50 group-hover:bg-seed-green-100 transition-colors mb-6">
                     {Icon && (

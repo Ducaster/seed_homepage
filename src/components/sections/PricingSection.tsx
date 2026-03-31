@@ -21,9 +21,9 @@ export default function PricingSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {PRICING_PLANS.map((plan, index) => (
-            <AnimateOnScroll key={plan.id} delay={index * 0.15}>
+            <AnimateOnScroll key={plan.id} delay={index * 0.15} className="h-full">
               <div
-                className={`relative bg-white rounded-2xl p-8 ${
+                className={`h-full flex flex-col relative bg-white rounded-2xl p-8 ${
                   plan.popular
                     ? "border-2 border-seed-green-500 shadow-xl shadow-seed-green-600/10"
                     : "border border-seed-earth-200"
@@ -68,7 +68,7 @@ export default function PricingSection() {
                 </div>
 
                 {/* 기능 목록 */}
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature.text} className="flex items-center gap-3">
                       {feature.included ? (

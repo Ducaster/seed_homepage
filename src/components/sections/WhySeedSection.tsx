@@ -27,8 +27,8 @@ export default function WhySeedSection() {
           {VALUE_PROPOSITIONS.map((vp, index) => {
             const Icon = iconMap[vp.icon];
             return (
-              <AnimateOnScroll key={vp.title} delay={index * 0.15}>
-                <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <AnimateOnScroll key={vp.title} delay={index * 0.15} className="h-full">
+                <div className="h-full bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
                   <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-seed-green-50 mb-6">
                     {Icon && (
                       <Icon className="w-6 h-6 text-seed-green-600" />
