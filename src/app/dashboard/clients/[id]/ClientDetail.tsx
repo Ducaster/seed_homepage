@@ -459,9 +459,9 @@ export default function ClientDetail({ client }: { client: Client }) {
                       className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-white focus:outline-none focus:border-primary"
                     >
                       <option value="">선택</option>
-                      {tools.map((t) => (
-                        <option key={t.id} value={t.name}>
-                          {t.name}
+                      {ASSESSMENTS.map((t) => (
+                        <option key={t.slug} value={t.title}>
+                          {t.title}
                         </option>
                       ))}
                     </select>
