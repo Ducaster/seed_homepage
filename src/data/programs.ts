@@ -1,0 +1,67 @@
+export const programs = [
+  {
+    id: "1",
+    name: "마음 탕후루",
+    theme: "인간관계 프로그램",
+    icon: "Candy",
+    description:
+      "달콤하지만 단단하게, 관계 속에서 나를 지키는 법을 배웁니다. 인간관계에서 반복되는 패턴을 이해하고, 건강한 경계를 세우며 나를 잃지 않는 관계를 만들어갑니다.",
+    duration: "50분",
+    frequency: "주 1회 · 8–12회기",
+    participantType: "개인",
+    color: "var(--color-program-1)",
+    gradientTo: "#B86040",
+  },
+  {
+    id: "2",
+    name: "너와나의 주파수",
+    theme: "소통 프로그램",
+    icon: "Radio",
+    description:
+      "서로의 주파수를 맞춰가며 진정한 소통의 길을 찾습니다. 대화의 벽을 허물고, 상대의 마음을 읽으며 나의 진심을 전하는 소통 역량을 기릅니다.",
+    duration: "50분",
+    frequency: "주 1회 · 6–10회기",
+    participantType: "개인/커플",
+    color: "var(--color-program-2)",
+    gradientTo: "#C08848",
+  },
+  {
+    id: "3",
+    name: "인간관계 먼지떨이",
+    theme: "자존감 프로그램",
+    icon: "Sparkles",
+    description:
+      "쌓인 먼지를 털어내고 본래의 빛나는 나를 다시 만납니다. 타인의 시선에 가려졌던 나의 가치를 발견하고, 흔들리지 않는 자존감의 토대를 세웁니다.",
+    duration: "50분",
+    frequency: "주 1회 · 8–12회기",
+    participantType: "개인",
+    color: "var(--color-program-3)",
+    gradientTo: "#6A9878",
+  },
+  {
+    id: "4",
+    name: "둥글둥글 행성",
+    theme: "심리코칭 프로그램",
+    icon: "Globe",
+    description:
+      "나만의 궤도를 찾아 균형 잡힌 마음의 행성을 만듭니다. 심리적 균형과 회복탄력성을 키우며, 일상 속 스트레스를 건강하게 관리합니다.",
+    duration: "60분",
+    frequency: "주 1회 · 10–16회기",
+    participantType: "개인",
+    color: "var(--color-program-4)",
+    gradientTo: "#6888A0",
+  },
+  {
+    id: "5",
+    name: "아리스토텔레스의 도토리",
+    theme: "철학 코칭 프로그램",
+    icon: "Trees",
+    description:
+      "작은 도토리 안에 담긴 가능성을 발견하는 여정입니다. 철학적 사유를 통해 삶의 의미와 방향을 탐색하고, 나만의 인생 철학을 세워갑니다.",
+    duration: "60분",
+    frequency: "주 1회 · 8–12회기",
+    participantType: "개인",
+    color: "var(--color-program-5)",
+    gradientTo: "#987088",
+  },
+] as const;
