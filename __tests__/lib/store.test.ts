@@ -62,6 +62,7 @@ function setupGoogleSheetsMock(
     failUpdateRange?: string;
   } = {},
 ) {
+  const GoogleAuth = vi.fn();
   const values = {
     get: vi.fn(async ({ range }: { range: string }) => {
       if (options.failValuesGet) {
@@ -146,18 +147,26 @@ function setupGoogleSheetsMock(
 
   vi.doMock("googleapis", () => ({
     google: {
-      auth: { GoogleAuth: vi.fn() },
+      auth: { GoogleAuth },
       sheets: vi.fn(() => ({ spreadsheets })),
     },
   }));
 
-  return { spreadsheets, values };
+  return { GoogleAuth, spreadsheets, values };
 }
 
-async function importStore() {
-  process.env.GOOGLE_SHEETS_SPREADSHEET_ID = "sheet-id";
-  process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL = "service@example.com";
+async function importStore(
+  env: {
+    spreadsheetId?: string;
+    serviceAccountEmail?: string;
+    privateKey?: string;
+  } = {},
+) {
+  process.env.GOOGLE_SHEETS_SPREADSHEET_ID = env.spreadsheetId ?? "sheet-id";
+  process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL =
+    env.serviceAccountEmail ?? "service@example.com";
   process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY =
+    env.privateKey ??
     "-----BEGIN PRIVATE KEY-----\\nkey\\n-----END PRIVATE KEY-----\\n";
 
   return import("@/lib/store");
@@ -363,5 +372,31 @@ describe("Google Sheets store safety", () => {
     expect(row[3]).toBe("010-0000-0000");
     expect(row[4]).toBe("상담 일정을 알고 싶습니다.");
     expect(row[5]).toBe("접수");
+  });
+
+  it("strips wrapping quotes from Sheets environment values before auth calls", async () => {
+    const state = createState();
+    const { GoogleAuth, spreadsheets } = setupGoogleSheetsMock(state);
+    const { getClients } = await importStore({
+      spreadsheetId: '"sheet-id"',
+      serviceAccountEmail: '"service@example.com"',
+      privateKey:
+        '"-----BEGIN PRIVATE KEY-----\\nkey\\n-----END PRIVATE KEY-----\\n"',
+    });
+
+    await getClients();
+
+    expect(spreadsheets.get).toHaveBeenCalledWith({
+      spreadsheetId: "sheet-id",
+    });
+    expect(GoogleAuth).toHaveBeenCalledWith(
+      expect.objectContaining({
+        credentials: {
+          client_email: "service@example.com",
+          private_key:
+            "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+        },
+      }),
+    );
   });
 });

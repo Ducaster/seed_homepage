@@ -1,8 +1,25 @@
 import type { Client, CoachingSession, Assessment } from "@/types/client";
 
-const SHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
-const SA_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-const SA_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+function normalizeEnvValue(value: string | undefined): string {
+  const trimmed = (value ?? "").trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
+}
+
+function normalizePrivateKey(value: string | undefined): string {
+  return normalizeEnvValue(value).replace(/\\n/g, "\n");
+}
+
+const SHEET_ID = normalizeEnvValue(process.env.GOOGLE_SHEETS_SPREADSHEET_ID);
+const SA_EMAIL = normalizeEnvValue(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
+const SA_KEY = normalizePrivateKey(
+  process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY,
+);
 const USE_SHEETS = !!(SHEET_ID && SA_EMAIL && SA_KEY);
 
 const sheetDefinitions = [
@@ -123,31 +140,17 @@ console.log("[store] 환경변수 진단:", {
 async function getSheetsClient() {
   const { google } = await import("googleapis");
 
-  // Handle private key: normalize all possible formats
-  let privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || "";
-
-  // 1. Strip surrounding quotes (Vercel UI에서 따옴표째 붙여넣은 경우)
-  if (
-    (privateKey.startsWith('"') && privateKey.endsWith('"')) ||
-    (privateKey.startsWith("'") && privateKey.endsWith("'"))
-  ) {
-    privateKey = privateKey.slice(1, -1);
-  }
-
-  // 2. Replace literal \n with actual newlines
-  privateKey = privateKey.replace(/\\n/g, "\n");
-
   console.log("[store] Private Key 진단:", {
-    길이: privateKey.length,
-    시작: privateKey.slice(0, 30),
-    끝: privateKey.slice(-30),
-    줄바꿈수: (privateKey.match(/\n/g) || []).length,
+    길이: SA_KEY.length,
+    시작: SA_KEY.slice(0, 30),
+    끝: SA_KEY.slice(-30),
+    줄바꿈수: (SA_KEY.match(/\n/g) || []).length,
   });
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: privateKey,
+      client_email: SA_EMAIL,
+      private_key: SA_KEY,
     },
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
@@ -159,7 +162,7 @@ let sheetsReady = false;
 async function ensureSheets() {
   if (sheetsReady) return;
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
 
   const res = await sheets.spreadsheets.get({ spreadsheetId: id });
   const existing = res.data.sheets?.map((s) => s.properties?.title) || [];
@@ -189,7 +192,7 @@ async function readSheets(
 ): Promise<Client[]> {
   await ensureSheets();
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
 
   const [cRes, sRes, aRes] = await Promise.all([
     sheets.spreadsheets.values.get({
@@ -255,7 +258,7 @@ async function readSheets(
 async function writeSheets(clients: Client[]): Promise<void> {
   await ensureSheets();
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
 
   const cRows = clients.map((c) => [
     c.id,
@@ -405,7 +408,7 @@ export function generateId(): string {
 async function appendSheetRow(range: string, values: string[]): Promise<void> {
   await ensureSheets();
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: id,
@@ -490,7 +493,7 @@ export async function savePersonalityResponse(data: {
 }): Promise<void> {
   if (!USE_SHEETS) return;
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
   await ensureSheets();
 
   await sheets.spreadsheets.values.append({
@@ -527,7 +530,7 @@ export async function saveAttachmentResponse(data: {
 }): Promise<void> {
   if (!USE_SHEETS) return;
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
   await ensureSheets();
 
   await sheets.spreadsheets.values.append({
@@ -563,7 +566,7 @@ export async function saveCoreEmotionResponse(data: {
 }): Promise<void> {
   if (!USE_SHEETS) return;
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
   await ensureSheets();
 
   await sheets.spreadsheets.values.append({
@@ -598,7 +601,7 @@ export async function saveDrawingResponse(data: {
 }): Promise<void> {
   if (!USE_SHEETS) return;
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
   await ensureSheets();
 
   await sheets.spreadsheets.values.append({
@@ -629,7 +632,7 @@ export async function getAssessmentDetail(
 ): Promise<Record<string, string> | null> {
   if (!USE_SHEETS) return null;
   const sheets = await getSheetsClient();
-  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+  const id = SHEET_ID;
   await ensureSheets();
 
   const tabMap: Record<string, { range: string; headers: string[] }> = {
