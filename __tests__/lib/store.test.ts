@@ -11,6 +11,8 @@ const allTabs = [
   "검사응답_애착유형",
   "검사응답_핵심감정",
   "검사응답_드로잉",
+  "플랜신청",
+  "문의",
 ];
 
 const clientHeader = [
@@ -36,6 +38,10 @@ function createState(overrides: Partial<SheetState> = {}): SheetState {
     ["id", "clientId", "날짜", "회차", "소요시간", "코칭내용", "메모"],
   ];
   state["검사결과"] = [["id", "clientId", "검사도구", "날짜", "결과", "메모"]];
+  state["플랜신청"] = [
+    ["id", "접수일", "플랜", "이름", "연락처", "처리상태", "메모"],
+  ];
+  state["문의"] = [["id", "접수일", "이름", "연락처", "문의내용", "처리상태"]];
 
   return { ...state, ...overrides };
 }
@@ -269,7 +275,7 @@ describe("Google Sheets store safety", () => {
 
   it("preserves soft-deleted rows during later active client saves", async () => {
     const state = createState({
-      "내담자": [
+      내담자: [
         clientHeader,
         [
           "client-1",
@@ -315,5 +321,47 @@ describe("Google Sheets store safety", () => {
     expect(state["내담자"].find((row) => row[0] === "client-2")?.[1]).toBe(
       "수정된 활성 섭외자",
     );
+  });
+
+  it("appends homepage plan applications to the plan application sheet", async () => {
+    const state = createState();
+    setupGoogleSheetsMock(state);
+    const { savePlanApplication } = await importStore();
+
+    const result = await savePlanApplication({
+      planName: "월간 구독",
+      name: "홍길동",
+      phone: "010-0000-0000",
+    });
+
+    const row = state["플랜신청"][1];
+    expect(result.id).toMatch(/^SEED-/);
+    expect(row[0]).toBe(result.id);
+    expect(row[1]).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(row[2]).toBe("월간 구독");
+    expect(row[3]).toBe("홍길동");
+    expect(row[4]).toBe("010-0000-0000");
+    expect(row[5]).toBe("접수");
+  });
+
+  it("appends homepage contact inquiries to the inquiry sheet", async () => {
+    const state = createState();
+    setupGoogleSheetsMock(state);
+    const { saveContactInquiry } = await importStore();
+
+    const result = await saveContactInquiry({
+      name: "홍길동",
+      contact: "010-0000-0000",
+      message: "상담 일정을 알고 싶습니다.",
+    });
+
+    const row = state["문의"][1];
+    expect(result.id).toMatch(/^INQ-/);
+    expect(row[0]).toBe(result.id);
+    expect(row[1]).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(row[2]).toBe("홍길동");
+    expect(row[3]).toBe("010-0000-0000");
+    expect(row[4]).toBe("상담 일정을 알고 싶습니다.");
+    expect(row[5]).toBe("접수");
   });
 });

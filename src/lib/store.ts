@@ -84,20 +84,34 @@ const sheetDefinitions = [
       "메모",
     ],
   },
+  {
+    title: "플랜신청",
+    headers: ["id", "접수일", "플랜", "이름", "연락처", "처리상태", "메모"],
+  },
+  {
+    title: "문의",
+    headers: ["id", "접수일", "이름", "연락처", "문의내용", "처리상태"],
+  },
 ] as const;
 
 const primarySheetDefinitions = sheetDefinitions.filter(
-  (definition): definition is (typeof sheetDefinitions)[number] & {
+  (
+    definition,
+  ): definition is (typeof sheetDefinitions)[number] & {
     dataRange: string;
     writeRange: string;
     clearColumn: string;
-  } => "dataRange" in definition
+  } => "dataRange" in definition,
 );
 
 // 서버 시작 시 환경변수 진단 로그
 console.log("[store] 환경변수 진단:", {
-  GOOGLE_SHEETS_SPREADSHEET_ID: SHEET_ID ? `✅ 설정됨 (${SHEET_ID.slice(0, 8)}...)` : "❌ 없음",
-  GOOGLE_SERVICE_ACCOUNT_EMAIL: SA_EMAIL ? `✅ 설정됨 (${SA_EMAIL})` : "❌ 없음",
+  GOOGLE_SHEETS_SPREADSHEET_ID: SHEET_ID
+    ? `✅ 설정됨 (${SHEET_ID.slice(0, 8)}...)`
+    : "❌ 없음",
+  GOOGLE_SERVICE_ACCOUNT_EMAIL: SA_EMAIL
+    ? `✅ 설정됨 (${SA_EMAIL})`
+    : "❌ 없음",
   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: SA_KEY
     ? `✅ 설정됨 (길이: ${SA_KEY.length}, BEGIN 포함: ${SA_KEY.includes("BEGIN PRIVATE KEY")})`
     : "❌ 없음",
@@ -171,7 +185,7 @@ async function ensureSheets() {
 }
 
 async function readSheets(
-  options: { includeDeleted?: boolean } = {}
+  options: { includeDeleted?: boolean } = {},
 ): Promise<Client[]> {
   await ensureSheets();
   const sheets = await getSheetsClient();
@@ -265,7 +279,7 @@ async function writeSheets(clients: Client[]): Promise<void> {
       s.duration.toString(),
       s.content,
       s.notes,
-    ])
+    ]),
   );
 
   const aRows = clients.flatMap((c) =>
@@ -276,7 +290,7 @@ async function writeSheets(clients: Client[]): Promise<void> {
       a.date,
       a.result,
       a.notes,
-    ])
+    ]),
   );
 
   const nextRowsByTitle: Record<string, string[][]> = {
@@ -292,7 +306,7 @@ async function writeSheets(clients: Client[]): Promise<void> {
         range: definition.dataRange,
       });
       return [definition.title, res.data.values?.length ?? 0] as const;
-    })
+    }),
   );
   const currentCountByTitle = Object.fromEntries(currentCounts);
 
@@ -307,7 +321,7 @@ async function writeSheets(clients: Client[]): Promise<void> {
         valueInputOption: "RAW",
         requestBody: { values: rows },
       });
-    })
+    }),
   );
 
   await Promise.all(
@@ -322,7 +336,7 @@ async function writeSheets(clients: Client[]): Promise<void> {
           definition.clearColumn
         }`,
       });
-    })
+    }),
   );
 }
 
@@ -347,7 +361,7 @@ export async function saveClients(clients: Client[]): Promise<void> {
     const currentClients = await readSheets({ includeDeleted: true });
     const incomingIds = new Set(clients.map((client) => client.id));
     const deletedClientsToPreserve = currentClients.filter(
-      (client) => client.deletedAt && !incomingIds.has(client.id)
+      (client) => client.deletedAt && !incomingIds.has(client.id),
     );
 
     await writeSheets([...clients, ...deletedClientsToPreserve]);
@@ -373,21 +387,91 @@ export async function softDeleteClient(id: string): Promise<void> {
     await writeSheets(clients);
   } catch (err) {
     console.error("[store] Google Sheets 소프트 삭제 실패:", err);
-    throw new Error("내담자 삭제 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    throw new Error(
+      "내담자 삭제 처리에 실패했습니다. 잠시 후 다시 시도해주세요.",
+    );
   }
 }
 
-export async function getClient(
-  id: string
-): Promise<Client | undefined> {
+export async function getClient(id: string): Promise<Client | undefined> {
   const clients = await getClients();
   return clients.find((c) => c.id === id);
 }
 
 export function generateId(): string {
-  return (
-    Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
-  );
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+async function appendSheetRow(range: string, values: string[]): Promise<void> {
+  await ensureSheets();
+  const sheets = await getSheetsClient();
+  const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: id,
+    range,
+    valueInputOption: "RAW",
+    requestBody: { values: [values] },
+  });
+}
+
+export async function savePlanApplication(data: {
+  planName: string;
+  name: string;
+  phone: string;
+}): Promise<{ id: string; createdAt: string }> {
+  if (!USE_SHEETS) {
+    throw new Error("Google Sheets 환경변수가 설정되지 않았습니다.");
+  }
+
+  const id = `SEED-${generateId()}`;
+  const createdAt = new Date().toISOString();
+
+  try {
+    await appendSheetRow("'플랜신청'!A:G", [
+      id,
+      createdAt,
+      data.planName,
+      data.name,
+      data.phone,
+      "접수",
+      "홈페이지 플랜 신청",
+    ]);
+    return { id, createdAt };
+  } catch (err) {
+    console.error("[store] 플랜 신청 저장 실패:", err);
+    throw new Error(
+      "플랜 신청 저장에 실패했습니다. 잠시 후 다시 시도해주세요.",
+    );
+  }
+}
+
+export async function saveContactInquiry(data: {
+  name: string;
+  contact: string;
+  message: string;
+}): Promise<{ id: string; createdAt: string }> {
+  if (!USE_SHEETS) {
+    throw new Error("Google Sheets 환경변수가 설정되지 않았습니다.");
+  }
+
+  const id = `INQ-${generateId()}`;
+  const createdAt = new Date().toISOString();
+
+  try {
+    await appendSheetRow("'문의'!A:F", [
+      id,
+      createdAt,
+      data.name,
+      data.contact,
+      data.message,
+      "접수",
+    ]);
+    return { id, createdAt };
+  } catch (err) {
+    console.error("[store] 문의 저장 실패:", err);
+    throw new Error("문의 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+  }
 }
 
 // ─── 검사 상세 응답 저장 ────────────────────────────────
@@ -414,15 +498,17 @@ export async function savePersonalityResponse(data: {
     range: "'검사응답_성격유형'!A:G",
     valueInputOption: "RAW",
     requestBody: {
-      values: [[
-        data.assessmentId,
-        data.clientId,
-        data.date,
-        JSON.stringify(data.answers),
-        data.mainType.toString(),
-        data.wing.toString(),
-        JSON.stringify(data.scores),
-      ]],
+      values: [
+        [
+          data.assessmentId,
+          data.clientId,
+          data.date,
+          JSON.stringify(data.answers),
+          data.mainType.toString(),
+          data.wing.toString(),
+          JSON.stringify(data.scores),
+        ],
+      ],
     },
   });
 }
@@ -449,15 +535,17 @@ export async function saveAttachmentResponse(data: {
     range: "'검사응답_애착유형'!A:G",
     valueInputOption: "RAW",
     requestBody: {
-      values: [[
-        data.assessmentId,
-        data.clientId,
-        data.date,
-        JSON.stringify(data.answers),
-        data.type,
-        data.avoidanceMean.toString(),
-        data.anxietyMean.toString(),
-      ]],
+      values: [
+        [
+          data.assessmentId,
+          data.clientId,
+          data.date,
+          JSON.stringify(data.answers),
+          data.type,
+          data.avoidanceMean.toString(),
+          data.anxietyMean.toString(),
+        ],
+      ],
     },
   });
 }
@@ -483,14 +571,16 @@ export async function saveCoreEmotionResponse(data: {
     range: "'검사응답_핵심감정'!A:F",
     valueInputOption: "RAW",
     requestBody: {
-      values: [[
-        data.assessmentId,
-        data.clientId,
-        data.date,
-        JSON.stringify(data.selections),
-        JSON.stringify(data.dominantTypes),
-        data.totalSelected.toString(),
-      ]],
+      values: [
+        [
+          data.assessmentId,
+          data.clientId,
+          data.date,
+          JSON.stringify(data.selections),
+          JSON.stringify(data.dominantTypes),
+          data.totalSelected.toString(),
+        ],
+      ],
     },
   });
 }
@@ -516,14 +606,16 @@ export async function saveDrawingResponse(data: {
     range: "'검사응답_드로잉'!A:F",
     valueInputOption: "RAW",
     requestBody: {
-      values: [[
-        data.assessmentId,
-        data.clientId,
-        data.slug,
-        data.date,
-        data.imageUrl,
-        data.notes,
-      ]],
+      values: [
+        [
+          data.assessmentId,
+          data.clientId,
+          data.slug,
+          data.date,
+          data.imageUrl,
+          data.notes,
+        ],
+      ],
     },
   });
 }
@@ -533,7 +625,7 @@ export async function saveDrawingResponse(data: {
  */
 export async function getAssessmentDetail(
   assessmentId: string,
-  slug: string
+  slug: string,
 ): Promise<Record<string, string> | null> {
   if (!USE_SHEETS) return null;
   const sheets = await getSheetsClient();
@@ -543,23 +635,60 @@ export async function getAssessmentDetail(
   const tabMap: Record<string, { range: string; headers: string[] }> = {
     personality: {
       range: "'검사응답_성격유형'!A:G",
-      headers: ["assessmentId", "clientId", "날짜", "응답JSON", "주유형", "날개", "유형별점수JSON"],
+      headers: [
+        "assessmentId",
+        "clientId",
+        "날짜",
+        "응답JSON",
+        "주유형",
+        "날개",
+        "유형별점수JSON",
+      ],
     },
     attachment: {
       range: "'검사응답_애착유형'!A:G",
-      headers: ["assessmentId", "clientId", "날짜", "응답JSON", "애착유형", "회피평균", "불안평균"],
+      headers: [
+        "assessmentId",
+        "clientId",
+        "날짜",
+        "응답JSON",
+        "애착유형",
+        "회피평균",
+        "불안평균",
+      ],
     },
     "core-emotion": {
       range: "'검사응답_핵심감정'!A:F",
-      headers: ["assessmentId", "clientId", "날짜", "선택항목JSON", "주요유형JSON", "총선택수"],
+      headers: [
+        "assessmentId",
+        "clientId",
+        "날짜",
+        "선택항목JSON",
+        "주요유형JSON",
+        "총선택수",
+      ],
     },
     "six-shapes": {
       range: "'검사응답_드로잉'!A:F",
-      headers: ["assessmentId", "clientId", "검사종류", "날짜", "이미지URL", "메모"],
+      headers: [
+        "assessmentId",
+        "clientId",
+        "검사종류",
+        "날짜",
+        "이미지URL",
+        "메모",
+      ],
     },
     "life-graph": {
       range: "'검사응답_드로잉'!A:F",
-      headers: ["assessmentId", "clientId", "검사종류", "날짜", "이미지URL", "메모"],
+      headers: [
+        "assessmentId",
+        "clientId",
+        "검사종류",
+        "날짜",
+        "이미지URL",
+        "메모",
+      ],
     },
   };
 

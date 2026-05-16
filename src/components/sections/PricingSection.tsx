@@ -97,9 +97,7 @@ export default function PricingSection() {
                 <SiteAction
                   kind="plan"
                   label={plan.cta}
-                  title="상담 신청이 접수되었습니다"
                   detailLabel={plan.name}
-                  description={`${plan.name} 플랜으로 상담 신청이 접수되었습니다. 담당 코치가 신청 내용을 확인한 뒤 순차적으로 연락드립니다.`}
                   className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-base font-semibold transition-all duration-200 ${
                     plan.popular
                       ? "bg-seed-green-600 text-white shadow-lg shadow-seed-green-600/25 hover:bg-seed-green-700"
