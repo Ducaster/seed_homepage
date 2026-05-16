@@ -9,19 +9,26 @@ import {
   softDeleteClient,
 } from "@/lib/store";
 import type { Client, CoachingSession, Assessment } from "@/types/client";
+import { DEFAULT_PROGRAM_NAME } from "@/data/programs";
+import { normalizePhoneNumber } from "@/lib/phone";
 
 export async function addClient(formData: FormData) {
+  const phone = normalizePhoneNumber((formData.get("phone") as string) || "");
+  if (!phone) {
+    redirect("/dashboard/clients/new?error=invalid-phone");
+  }
+
   const clients = await getClients();
   const id = generateId();
 
   const newClient: Client = {
     id,
     name: formData.get("name") as string,
-    phone: formData.get("phone") as string,
+    phone,
     email: (formData.get("email") as string) || "",
     birthDate: (formData.get("birthDate") as string) || null,
     gender: (formData.get("gender") as string) || "",
-    program: (formData.get("program") as string) || "",
+    program: DEFAULT_PROGRAM_NAME,
     registeredAt: new Date().toISOString(),
     notes: (formData.get("notes") as string) || "",
     sessions: [],
@@ -34,8 +41,13 @@ export async function addClient(formData: FormData) {
 }
 
 export async function updateClient(formData: FormData) {
-  const clients = await getClients();
   const id = formData.get("id") as string;
+  const phone = normalizePhoneNumber((formData.get("phone") as string) || "");
+  if (!phone) {
+    redirect(`/dashboard/clients/${id}?error=invalid-phone&edit=1`);
+  }
+
+  const clients = await getClients();
   const index = clients.findIndex((c) => c.id === id);
 
   if (index === -1) redirect("/dashboard/clients");
@@ -43,11 +55,11 @@ export async function updateClient(formData: FormData) {
   clients[index] = {
     ...clients[index],
     name: formData.get("name") as string,
-    phone: formData.get("phone") as string,
+    phone,
     email: (formData.get("email") as string) || "",
     birthDate: (formData.get("birthDate") as string) || null,
     gender: (formData.get("gender") as string) || "",
-    program: (formData.get("program") as string) || "",
+    program: DEFAULT_PROGRAM_NAME,
     notes: (formData.get("notes") as string) || "",
   };
 
@@ -92,9 +104,7 @@ export async function deleteSession(formData: FormData) {
 
   if (!client) redirect("/dashboard/clients");
 
-  client!.sessions = client!.sessions.filter(
-    (s) => s.id !== sessionId
-  );
+  client!.sessions = client!.sessions.filter((s) => s.id !== sessionId);
   client!.sessions.forEach((s, i) => {
     s.sessionNumber = i + 1;
   });
@@ -133,7 +143,7 @@ export async function deleteAssessment(formData: FormData) {
   if (!client) redirect("/dashboard/clients");
 
   client!.assessments = client!.assessments.filter(
-    (a) => a.id !== assessmentId
+    (a) => a.id !== assessmentId,
   );
   await saveClients(clients);
   revalidatePath(`/dashboard/clients/${clientId}`);

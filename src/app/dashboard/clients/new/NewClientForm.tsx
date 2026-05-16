@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { addClient } from "@/app/dashboard/actions";
 import { programs } from "@/data/programs";
+import { PHONE_FORMAT_MESSAGE, PHONE_INPUT_PATTERN } from "@/lib/phone";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, FileText } from "lucide-react";
 
@@ -48,7 +49,7 @@ const PRIVACY_CONTENT = [
   },
 ];
 
-export function NewClientForm() {
+export function NewClientForm({ error }: { error?: string }) {
   const [agreed, setAgreed] = useState(false);
   const [ndaChecked, setNdaChecked] = useState(false);
   const [privacyChecked, setPrivacyChecked] = useState(false);
@@ -183,6 +184,12 @@ export function NewClientForm() {
         새 내담자 등록
       </h1>
 
+      {error === "invalid-phone" && (
+        <div className="mb-4 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {PHONE_FORMAT_MESSAGE}
+        </div>
+      )}
+
       <form
         action={addClient}
         className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-8 space-y-5"
@@ -216,9 +223,15 @@ export function NewClientForm() {
             id="phone"
             name="phone"
             required
+            inputMode="tel"
+            pattern={PHONE_INPUT_PATTERN}
+            title={PHONE_FORMAT_MESSAGE}
             className="w-full px-4 py-3 rounded-[var(--radius-sm)] border border-border-light bg-bg text-text placeholder:text-text-light focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-pale transition-colors"
             placeholder="010-0000-0000"
           />
+          <p className="mt-1.5 text-xs text-text-light">
+            010-0000-0000 또는 01000000000 형식으로 입력해주세요.
+          </p>
         </div>
 
         <div>
@@ -283,9 +296,9 @@ export function NewClientForm() {
           <select
             id="program"
             name="program"
+            defaultValue={programs[0].name}
             className="w-full px-4 py-3 rounded-[var(--radius-sm)] border border-border-light bg-bg text-text focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-pale transition-colors"
           >
-            <option value="">프로그램 선택</option>
             {programs.map((p) => (
               <option key={p.id} value={p.name}>
                 {p.name}

@@ -226,7 +226,7 @@ describe("Google Sheets store safety", () => {
     const { getClients } = await importStore();
 
     await expect(getClients()).resolves.toMatchObject([
-      { program: "아리스토텔레스의 씨앗" },
+      { program: "SEED-코칭" },
     ]);
   });
 

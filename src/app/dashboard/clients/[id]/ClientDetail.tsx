@@ -14,6 +14,7 @@ import {
 } from "@/app/dashboard/actions";
 import { ASSESSMENTS } from "@/data/assessments";
 import { programs } from "@/data/programs";
+import { PHONE_FORMAT_MESSAGE, PHONE_INPUT_PATTERN } from "@/lib/phone";
 import {
   ArrowLeft,
   Plus,
@@ -26,15 +27,22 @@ import {
   ClipboardList,
 } from "lucide-react";
 
-export default function ClientDetail({ client }: { client: Client }) {
+export default function ClientDetail({
+  client,
+  error,
+  startEditing = false,
+}: {
+  client: Client;
+  error?: string;
+  startEditing?: boolean;
+}) {
   const [showSessionForm, setShowSessionForm] = useState(false);
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
-  const [expandedSession, setExpandedSession] = useState<string | null>(
-    null
+  const [showEditForm, setShowEditForm] = useState(startEditing);
+  const [expandedSession, setExpandedSession] = useState<string | null>(null);
+  const [expandedAssessment, setExpandedAssessment] = useState<string | null>(
+    null,
   );
-  const [expandedAssessment, setExpandedAssessment] =
-    useState<string | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -56,9 +64,7 @@ export default function ClientDetail({ client }: { client: Client }) {
           {/* Client Info */}
           <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading font-bold text-text">
-                내담자 정보
-              </h3>
+              <h3 className="font-heading font-bold text-text">내담자 정보</h3>
               <button
                 onClick={() => setShowEditForm(!showEditForm)}
                 className="p-1.5 rounded-[var(--radius-sm)] text-text-light hover:text-primary hover:bg-primary-pale transition-colors cursor-pointer"
@@ -78,12 +84,19 @@ export default function ClientDetail({ client }: { client: Client }) {
                   className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-bg focus:outline-none focus:border-primary"
                 />
                 <input
+                  type="tel"
                   name="phone"
                   defaultValue={client.phone}
                   required
+                  inputMode="tel"
+                  pattern={PHONE_INPUT_PATTERN}
+                  title={PHONE_FORMAT_MESSAGE}
                   placeholder="연락처"
                   className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-bg focus:outline-none focus:border-primary"
                 />
+                {error === "invalid-phone" && (
+                  <p className="text-xs text-red-600">{PHONE_FORMAT_MESSAGE}</p>
+                )}
                 <input
                   name="email"
                   defaultValue={client.email}
@@ -110,10 +123,9 @@ export default function ClientDetail({ client }: { client: Client }) {
                 </div>
                 <select
                   name="program"
-                  defaultValue={client.program}
+                  defaultValue={programs[0].name}
                   className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-bg focus:outline-none focus:border-primary"
                 >
-                  <option value="">프로그램</option>
                   {programs.map((p) => (
                     <option key={p.id} value={p.name}>
                       {p.name}
@@ -142,10 +154,7 @@ export default function ClientDetail({ client }: { client: Client }) {
                   <InfoRow label="이메일" value={client.email} />
                 )}
                 {client.birthDate && (
-                  <InfoRow
-                    label="생년월일"
-                    value={client.birthDate}
-                  />
+                  <InfoRow label="생년월일" value={client.birthDate} />
                 )}
                 {client.gender && (
                   <InfoRow label="성별" value={client.gender} />
@@ -155,15 +164,13 @@ export default function ClientDetail({ client }: { client: Client }) {
                 )}
                 <InfoRow
                   label="등록일"
-                  value={new Date(
-                    client.registeredAt
-                  ).toLocaleDateString("ko-KR")}
+                  value={new Date(client.registeredAt).toLocaleDateString(
+                    "ko-KR",
+                  )}
                 />
                 {client.notes && (
                   <div className="pt-2 border-t border-border-lighter">
-                    <span className="text-text-muted block mb-1">
-                      메모
-                    </span>
+                    <span className="text-text-muted block mb-1">메모</span>
                     <p className="text-text whitespace-pre-wrap">
                       {client.notes}
                     </p>
@@ -179,7 +186,7 @@ export default function ClientDetail({ client }: { client: Client }) {
             onSubmit={(e) => {
               if (
                 !confirm(
-                  `${client.name} 내담자를 목록에서 숨김 처리하시겠습니까?\n시트에는 삭제일과 기존 기록이 보존됩니다.`
+                  `${client.name} 내담자를 목록에서 숨김 처리하시겠습니까?\n시트에는 삭제일과 기존 기록이 보존됩니다.`,
                 )
               ) {
                 e.preventDefault();
@@ -214,11 +221,7 @@ export default function ClientDetail({ client }: { client: Client }) {
                 onClick={() => setShowSessionForm(!showSessionForm)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors cursor-pointer"
               >
-                {showSessionForm ? (
-                  <X size={14} />
-                ) : (
-                  <Plus size={14} />
-                )}
+                {showSessionForm ? <X size={14} /> : <Plus size={14} />}
                 {showSessionForm ? "취소" : "새 기록"}
               </button>
             </div>
@@ -228,11 +231,7 @@ export default function ClientDetail({ client }: { client: Client }) {
                 action={addSession}
                 className="mb-5 p-4 bg-bg rounded-[var(--radius-md)] space-y-3"
               >
-                <input
-                  type="hidden"
-                  name="clientId"
-                  value={client.id}
-                />
+                <input type="hidden" name="clientId" value={client.id} />
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-text-muted mb-1">
@@ -306,9 +305,7 @@ export default function ClientDetail({ client }: { client: Client }) {
                     <button
                       onClick={() =>
                         setExpandedSession(
-                          expandedSession === session.id
-                            ? null
-                            : session.id
+                          expandedSession === session.id ? null : session.id,
                         )
                       }
                       className="w-full flex items-center justify-between p-3.5 hover:bg-bg transition-colors text-left cursor-pointer"
@@ -327,9 +324,15 @@ export default function ClientDetail({ client }: { client: Client }) {
                         </div>
                       </div>
                       {expandedSession === session.id ? (
-                        <ChevronDown size={16} className="text-text-light shrink-0" />
+                        <ChevronDown
+                          size={16}
+                          className="text-text-light shrink-0"
+                        />
                       ) : (
-                        <ChevronRight size={16} className="text-text-light shrink-0" />
+                        <ChevronRight
+                          size={16}
+                          className="text-text-light shrink-0"
+                        />
                       )}
                     </button>
 
@@ -357,11 +360,7 @@ export default function ClientDetail({ client }: { client: Client }) {
                           action={deleteSession}
                           className="mt-3 pt-3 border-t border-border-lighter"
                           onSubmit={(e) => {
-                            if (
-                              !confirm(
-                                "이 코칭 기록을 삭제하시겠습니까?"
-                              )
-                            )
+                            if (!confirm("이 코칭 기록을 삭제하시겠습니까?"))
                               e.preventDefault();
                           }}
                         >
@@ -408,7 +407,10 @@ export default function ClientDetail({ client }: { client: Client }) {
                 </p>
               </div>
             </div>
-            <ChevronRight size={18} className="text-text-light group-hover:text-primary transition-colors" />
+            <ChevronRight
+              size={18}
+              className="text-text-light group-hover:text-primary transition-colors"
+            />
           </Link>
 
           {/* Assessments */}
@@ -424,16 +426,10 @@ export default function ClientDetail({ client }: { client: Client }) {
                 </span>
               </div>
               <button
-                onClick={() =>
-                  setShowAssessmentForm(!showAssessmentForm)
-                }
+                onClick={() => setShowAssessmentForm(!showAssessmentForm)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors cursor-pointer"
               >
-                {showAssessmentForm ? (
-                  <X size={14} />
-                ) : (
-                  <Plus size={14} />
-                )}
+                {showAssessmentForm ? <X size={14} /> : <Plus size={14} />}
                 {showAssessmentForm ? "취소" : "새 검사"}
               </button>
             </div>
@@ -443,11 +439,7 @@ export default function ClientDetail({ client }: { client: Client }) {
                 action={addAssessment}
                 className="mb-5 p-4 bg-bg rounded-[var(--radius-md)] space-y-3"
               >
-                <input
-                  type="hidden"
-                  name="clientId"
-                  value={client.id}
-                />
+                <input type="hidden" name="clientId" value={client.id} />
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-text-muted mb-1">
@@ -527,17 +519,14 @@ export default function ClientDetail({ client }: { client: Client }) {
                         setExpandedAssessment(
                           expandedAssessment === assessment.id
                             ? null
-                            : assessment.id
+                            : assessment.id,
                         )
                       }
                       className="w-full flex items-center justify-between p-3.5 hover:bg-bg transition-colors text-left cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <span className="w-8 h-8 rounded-full bg-bg-warm flex items-center justify-center shrink-0">
-                          <FileText
-                            size={14}
-                            className="text-primary"
-                          />
+                          <FileText size={14} className="text-primary" />
                         </span>
                         <div>
                           <p className="text-sm font-medium text-text">
@@ -549,9 +538,15 @@ export default function ClientDetail({ client }: { client: Client }) {
                         </div>
                       </div>
                       {expandedAssessment === assessment.id ? (
-                        <ChevronDown size={16} className="text-text-light shrink-0" />
+                        <ChevronDown
+                          size={16}
+                          className="text-text-light shrink-0"
+                        />
                       ) : (
-                        <ChevronRight size={16} className="text-text-light shrink-0" />
+                        <ChevronRight
+                          size={16}
+                          className="text-text-light shrink-0"
+                        />
                       )}
                     </button>
 
@@ -579,11 +574,7 @@ export default function ClientDetail({ client }: { client: Client }) {
                           action={deleteAssessment}
                           className="mt-3 pt-3 border-t border-border-lighter"
                           onSubmit={(e) => {
-                            if (
-                              !confirm(
-                                "이 검사 기록을 삭제하시겠습니까?"
-                              )
-                            )
+                            if (!confirm("이 검사 기록을 삭제하시겠습니까?"))
                               e.preventDefault();
                           }}
                         >
