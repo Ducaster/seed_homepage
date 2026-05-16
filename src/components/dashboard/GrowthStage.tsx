@@ -6,151 +6,229 @@ import {
   getNextStageInfo,
 } from "@/types/client";
 
-function AcornIcon({
+function SeedIcon({
   size = 48,
   active = false,
 }: {
   size?: number;
   active?: boolean;
 }) {
-  const cap = active ? "#9C5030" : "#D8C8B8";
-  const capDark = active ? "#7A3D24" : "#C9B8A8";
-  const body = active ? "#C9A07A" : "#E8DDD0";
-  const highlight = active ? "#D8B48A" : "#F0E8DE";
+  const shell = active ? "#9A6A3A" : "#D8C8B8";
+  const shellDark = active ? "#73502B" : "#C9B8A8";
+  const glow = active ? "#D6B37A" : "#EFE5DA";
+  const root = active ? "#6C7B46" : "#D8C8B8";
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
-      <rect x="22.5" y="8" width="3" height="6" rx="1.5" fill={capDark} />
-      <path d="M13 24C13 20 17.5 15 24 15C30.5 15 35 20 35 24Z" fill={cap} />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
-        d="M16 22.5C16 22.5 19 19 24 19C29 19 32 22.5 32 22.5"
-        stroke={capDark}
-        strokeWidth="0.8"
-        fill="none"
+        d="M24 13C31 15.5 35 21.5 35 28.5C35 37 29.5 42 24 42C18.5 42 13 37 13 28.5C13 21.5 17 15.5 24 13Z"
+        fill={shell}
       />
-      <ellipse cx="24" cy="31" rx="11" ry="13" fill={body} />
-      <ellipse cx="21" cy="29" rx="4" ry="6" fill={highlight} opacity="0.5" />
-      <path d="M19.5 42Q24 48 28.5 42" fill={body} />
+      <path
+        d="M24 13C25.5 21 25.5 33.5 24 42"
+        stroke={shellDark}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        d="M22.5 41.5C22.5 41.5 19.5 44 16 44"
+        stroke={root}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <ellipse cx="20.5" cy="27" rx="3.5" ry="7" fill={glow} opacity="0.55" />
     </svg>
   );
 }
 
-function SeedlingIcon({
+function SproutIcon({
   size = 48,
   active = false,
 }: {
   size?: number;
   active?: boolean;
 }) {
-  const stem = active ? "#547E68" : "#C9B8A8";
-  const leafLight = active ? "#7BA380" : "#D8C8B8";
-  const leafDark = active ? "#547E68" : "#C9B8A8";
-  const ground = active ? "#C9A07A" : "#E8DDD0";
+  const stem = active ? "#3F7F52" : "#C9B8A8";
+  const leafLight = active ? "#78B36D" : "#D8C8B8";
+  const leafDark = active ? "#4F9F63" : "#C9B8A8";
+  const seed = active ? "#B8844B" : "#E8DDD0";
+  const ground = active ? "#D3B47E" : "#E8DDD0";
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      aria-hidden="true"
+    >
+      <ellipse cx="24" cy="43" rx="12" ry="2.5" fill={ground} />
       <path
-        d="M24 42V20"
+        d="M18 38C18 34.5 20.5 32 24 32C27.5 32 30 34.5 30 38Z"
+        fill={seed}
+      />
+      <path
+        d="M24 39V18"
         stroke={stem}
         strokeWidth="2.5"
         strokeLinecap="round"
       />
-      <path d="M24 32C24 32 15 30 13 23C13 23 19 20 24 28" fill={leafLight} />
-      <path d="M24 25C24 25 33 23 35 16C35 16 29 13 24 21" fill={leafDark} />
       <path
-        d="M24 18C24 18 28 14 32 10"
-        stroke={leafDark}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
+        d="M24 29C24 29 15.5 27.5 13 20C13 20 20 17.5 24 25.5"
+        fill={leafLight}
       />
-      <ellipse cx="32" cy="9" rx="3" ry="4" fill={leafLight} />
-      <ellipse cx="24" cy="43.5" rx="9" ry="2.5" fill={ground} />
+      <path
+        d="M24 23C24 23 33 20.5 36 13C36 13 28.5 11.5 24 20"
+        fill={leafDark}
+      />
+      <path
+        d="M17 21C19.5 22.5 21.5 24 23.5 27"
+        stroke="#2F6E45"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity={active ? "0.55" : "0.25"}
+      />
+      <path
+        d="M31 14.5C29 16.5 27.5 18 25 21"
+        stroke="#2F6E45"
+        strokeWidth="1"
+        strokeLinecap="round"
+        opacity={active ? "0.55" : "0.25"}
+      />
     </svg>
   );
 }
 
-function OakIcon({
+function YoungZelkovaIcon({
   size = 48,
   active = false,
 }: {
   size?: number;
   active?: boolean;
 }) {
-  const trunk = active ? "#9C5030" : "#C9B8A8";
-  const canopy1 = active ? "#547E68" : "#D8C8B8";
-  const canopy2 = active ? "#7BA380" : "#E0D0C0";
-  const canopy3 = active ? "#8AB890" : "#E8DDD0";
-  const ground = active ? "#C9A07A" : "#E8DDD0";
+  const trunk = active ? "#87613A" : "#C9B8A8";
+  const branch = active ? "#9A6A3A" : "#C9B8A8";
+  const canopy = active ? "#2F7D52" : "#D8C8B8";
+  const leafLight = active ? "#84B982" : "#E8DDD0";
+  const leafMid = active ? "#5EA86F" : "#E0D0C0";
+  const ground = active ? "#D3B47E" : "#E8DDD0";
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      aria-hidden="true"
+    >
+      <ellipse cx="24" cy="45" rx="13" ry="2.2" fill={ground} />
       <path
-        d="M22 44V28"
+        d="M24 44V23"
         stroke={trunk}
-        strokeWidth="3"
+        strokeWidth="3.2"
         strokeLinecap="round"
       />
       <path
-        d="M26 44V30"
-        stroke={trunk}
-        strokeWidth="3"
+        d="M24 31L16 22"
+        stroke={branch}
+        strokeWidth="1.8"
         strokeLinecap="round"
       />
-      <circle cx="24" cy="20" r="14" fill={canopy1} />
-      <circle cx="17" cy="18" r="8" fill={canopy2} />
-      <circle cx="31" cy="18" r="8" fill={canopy1} />
-      <circle cx="24" cy="13" r="7" fill={canopy3} />
-      <ellipse cx="24" cy="45.5" rx="11" ry="2" fill={ground} />
+      <path
+        d="M24 29L32 20"
+        stroke={branch}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M24 8C34 10 39 17.5 37 27C33.5 26 29.5 28 24 31C18.5 28 14.5 26 11 27C9 17.5 14 10 24 8Z"
+        fill={canopy}
+      />
+      <path
+        d="M16 15C19.5 12 25 11.5 30 14"
+        stroke={leafLight}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
+      <circle cx="17" cy="24" r="5" fill={leafMid} />
+      <circle cx="31" cy="23" r="5.5" fill={leafLight} />
     </svg>
   );
 }
 
-function MatureOakIcon({
+function ZelkovaIcon({
   size = 48,
   active = false,
 }: {
   size?: number;
   active?: boolean;
 }) {
-  const trunk = active ? "#7A3D24" : "#C9B8A8";
-  const branch = active ? "#9C5030" : "#C9B8A8";
-  const canopy1 = active ? "#3D6B4E" : "#C9B8A8";
-  const canopy2 = active ? "#547E68" : "#D8C8B8";
-  const canopy3 = active ? "#7BA380" : "#E0D0C0";
-  const highlight = active ? "#8AB890" : "#E8DDD0";
-  const ground = active ? "#C9A07A" : "#E8DDD0";
+  const trunk = active ? "#72502F" : "#C9B8A8";
+  const branch = active ? "#8A6139" : "#C9B8A8";
+  const canopyDark = active ? "#285C45" : "#C9B8A8";
+  const canopyMid = active ? "#3F7F52" : "#D8C8B8";
+  const canopyLight = active ? "#7FB378" : "#E0D0C0";
+  const highlight = active ? "#A7C98E" : "#E8DDD0";
+  const ground = active ? "#D3B47E" : "#E8DDD0";
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      aria-hidden="true"
+    >
+      <ellipse cx="24" cy="46" rx="16" ry="2" fill={ground} />
+      <path d="M20 44C21 37 22 31 24 24C26 31 27 37 28 44" fill={trunk} />
       <path
-        d="M20 44V26"
-        stroke={trunk}
-        strokeWidth="3.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M28 44V28"
-        stroke={trunk}
-        strokeWidth="3.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M20 30L13 23"
+        d="M24 28L14 20"
         stroke={branch}
         strokeWidth="2"
         strokeLinecap="round"
       />
       <path
-        d="M28 32L35 25"
+        d="M24 27L34 18"
         stroke={branch}
         strokeWidth="2"
         strokeLinecap="round"
       />
-      <circle cx="24" cy="17" r="16" fill={canopy1} />
-      <circle cx="15" cy="15" r="10" fill={canopy2} />
-      <circle cx="33" cy="15" r="10" fill={canopy2} />
-      <circle cx="24" cy="9" r="9" fill={canopy3} />
-      <circle cx="9" cy="19" r="6" fill={canopy2} />
-      <circle cx="39" cy="19" r="6" fill={canopy2} />
-      <circle cx="19" cy="11" r="4" fill={highlight} opacity="0.5" />
-      <ellipse cx="24" cy="46" rx="15" ry="2" fill={ground} />
+      <path
+        d="M24 25L24 10"
+        stroke={branch}
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M7 25C8.5 13.5 15.5 6 24 6C32.5 6 39.5 13.5 41 25C36 23 32 25 28 30C25.5 28 22.5 28 20 30C16 25 12 23 7 25Z"
+        fill={canopyDark}
+      />
+      <path
+        d="M12 22C14 13.5 18.5 9 24 9C29.5 9 34 13.5 36 22C31.5 20 28.5 22 24 26C19.5 22 16.5 20 12 22Z"
+        fill={canopyMid}
+      />
+      <path
+        d="M17 18C18.5 12.5 21 10 24 10C27 10 29.5 12.5 31 18C28 17 26 18.5 24 21C22 18.5 20 17 17 18Z"
+        fill={canopyLight}
+      />
+      <path
+        d="M13 17C15.5 13 19 10.5 23 10"
+        stroke={highlight}
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        opacity="0.75"
+      />
+      <path
+        d="M30 13C33 15.5 35 19 36 22"
+        stroke={highlight}
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
     </svg>
   );
 }
@@ -159,10 +237,10 @@ const STAGE_ICONS: Record<
   GrowthStageType,
   React.FC<{ size?: number; active?: boolean }>
 > = {
-  acorn: AcornIcon,
-  seedling: SeedlingIcon,
-  oak: OakIcon,
-  "mature-oak": MatureOakIcon,
+  seed: SeedIcon,
+  sprout: SproutIcon,
+  "young-zelkova": YoungZelkovaIcon,
+  zelkova: ZelkovaIcon,
 };
 
 export function GrowthStageCard({ sessionCount }: { sessionCount: number }) {

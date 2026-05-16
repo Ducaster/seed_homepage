@@ -40,7 +40,7 @@ describe("ClientList", () => {
     expect(screen.getByText("SEED 기본")).toBeInTheDocument();
     expect(screen.getByText("1회")).toBeInTheDocument();
     expect(screen.getByText("2026-05-17")).toBeInTheDocument();
-    expect(screen.getByText("도토리")).toBeInTheDocument();
+    expect(screen.getByText("씨앗")).toBeInTheDocument();
   });
 
   it("내담자가 없으면 첫 등록 안내를 보여준다", () => {

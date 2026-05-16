@@ -30,7 +30,7 @@ export interface Assessment {
   notes: string;
 }
 
-export type GrowthStage = "acorn" | "seedling" | "oak" | "mature-oak";
+export type GrowthStage = "seed" | "sprout" | "young-zelkova" | "zelkova";
 
 export const GROWTH_STAGES: {
   key: GrowthStage;
@@ -40,40 +40,40 @@ export const GROWTH_STAGES: {
   color: string;
 }[] = [
   {
-    key: "acorn",
-    label: "도토리",
-    description: "가능성을 단단히 품은 시작점",
+    key: "seed",
+    label: "씨앗",
+    description: "가능성을 품고 조용히 준비하는 시작점",
     minSessions: 0,
-    color: "#A46A3F",
+    color: "#9A6A3A",
   },
   {
-    key: "seedling",
-    label: "어린 묘목",
-    description: "새싹이 방향을 잡는 시기",
+    key: "sprout",
+    label: "새싹",
+    description: "자기 이해가 고개를 내미는 시기",
     minSessions: 6,
-    color: "#16A34A",
+    color: "#4F9F63",
   },
   {
-    key: "oak",
-    label: "참나무",
-    description: "뿌리와 줄기가 단단해지는 성장기",
+    key: "young-zelkova",
+    label: "어린 느티나무",
+    description: "방향을 잡고 뿌리를 깊게 내리는 성장기",
     minSessions: 10,
-    color: "#15803D",
+    color: "#2F7D52",
   },
   {
-    key: "mature-oak",
-    label: "성숙한 참나무",
-    description: "자기 이해가 깊게 자리잡은 단계",
+    key: "zelkova",
+    label: "느티나무",
+    description: "스스로 그늘을 만들 만큼 단단해진 단계",
     minSessions: 13,
-    color: "#36583A",
+    color: "#285C45",
   },
 ];
 
 export function getGrowthStage(sessionCount: number): GrowthStage {
-  if (sessionCount >= 13) return "mature-oak";
-  if (sessionCount >= 10) return "oak";
-  if (sessionCount >= 6) return "seedling";
-  return "acorn";
+  if (sessionCount >= 13) return "zelkova";
+  if (sessionCount >= 10) return "young-zelkova";
+  if (sessionCount >= 6) return "sprout";
+  return "seed";
 }
 
 export function getGrowthStageInfo(sessionCount: number) {
