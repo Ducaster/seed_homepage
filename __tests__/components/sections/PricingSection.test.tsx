@@ -24,6 +24,12 @@ describe("PricingSection", () => {
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
       "당신에게 맞는 플랜을 선택하세요",
     );
+    expect(
+      screen.getByText(
+        "모든 플랜에서 SEED의 핵심 기능을 자유롭게 이용할 수 있습니다.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("언제든지 해지 가능합니다.")).toBeInTheDocument();
   });
 
   it("월간/연간 플랜을 모두 렌더링한다", () => {

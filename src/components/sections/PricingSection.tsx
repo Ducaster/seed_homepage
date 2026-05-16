@@ -2,7 +2,6 @@
 
 import { Check, X } from "lucide-react";
 import Container from "../layout/Container";
-import SectionHeading from "../ui/SectionHeading";
 import Badge from "../ui/Badge";
 import SiteAction from "../ui/SiteAction";
 import AnimateOnScroll from "../ui/AnimateOnScroll";
@@ -13,10 +12,17 @@ export default function PricingSection() {
     <section id="pricing" className="py-20 lg:py-28 bg-seed-earth-50">
       <Container>
         <AnimateOnScroll>
-          <SectionHeading
-            title="당신에게 맞는 플랜을 선택하세요"
-            subtitle="모든 플랜에서 리프레임포인트의 핵심 기능을 자유롭게 이용할 수 있습니다. 언제든지 해지 가능합니다."
-          />
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-seed-earth-900">
+              당신에게 맞는 플랜을 선택하세요
+            </h2>
+            <p className="mx-auto mt-4 max-w-[21rem] break-keep text-base leading-7 text-seed-earth-700 sm:max-w-2xl sm:text-lg">
+              <span className="block">
+                모든 플랜에서 SEED의 핵심 기능을 자유롭게 이용할 수 있습니다.
+              </span>
+              <span className="block">언제든지 해지 가능합니다.</span>
+            </p>
+          </div>
         </AnimateOnScroll>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
