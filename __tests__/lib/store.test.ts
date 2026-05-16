@@ -204,6 +204,32 @@ describe("Google Sheets store safety", () => {
     );
   });
 
+  it("normalizes legacy acorn program names from Sheets", async () => {
+    const state = createState({
+      내담자: [
+        clientHeader,
+        [
+          "client-1",
+          "기존 내담자",
+          "010-1111-1111",
+          "",
+          "",
+          "",
+          "아리스토텔레스의 도토리",
+          "2026-05-15T00:00:00.000Z",
+          "",
+          "",
+        ],
+      ],
+    });
+    setupGoogleSheetsMock(state);
+    const { getClients } = await importStore();
+
+    await expect(getClients()).resolves.toMatchObject([
+      { program: "아리스토텔레스의 씨앗" },
+    ]);
+  });
+
   it("keeps existing rows when a replacement write fails", async () => {
     const state = createState({
       내담자: [

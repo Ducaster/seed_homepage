@@ -1,4 +1,5 @@
 import type { Client, CoachingSession, Assessment } from "@/types/client";
+import { normalizeProgramName } from "@/data/programs";
 
 function normalizeEnvValue(value: string | undefined): string {
   const trimmed = (value ?? "").trim();
@@ -243,7 +244,7 @@ async function readSheets(
     email: r[3] || "",
     birthDate: r[4] || null,
     gender: r[5] || "",
-    program: r[6] || "",
+    program: normalizeProgramName(r[6] || ""),
     registeredAt: r[7] || "",
     notes: r[8] || "",
     deletedAt: r[9] || null,

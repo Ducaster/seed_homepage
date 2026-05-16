@@ -65,3 +65,11 @@ export const programs = [
     gradientTo: "#987088",
   },
 ] as const;
+
+const programNameAliases: Record<string, string> = {
+  "아리스토텔레스의 도토리": "아리스토텔레스의 씨앗",
+};
+
+export function normalizeProgramName(programName: string): string {
+  return programNameAliases[programName] ?? programName;
+}
