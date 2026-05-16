@@ -4,7 +4,7 @@ import { Check, X } from "lucide-react";
 import Container from "../layout/Container";
 import SectionHeading from "../ui/SectionHeading";
 import Badge from "../ui/Badge";
-import DemoAction from "../ui/DemoAction";
+import SiteAction from "../ui/SiteAction";
 import AnimateOnScroll from "../ui/AnimateOnScroll";
 import { PRICING_PLANS } from "@/lib/constants";
 
@@ -21,7 +21,11 @@ export default function PricingSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {PRICING_PLANS.map((plan, index) => (
-            <AnimateOnScroll key={plan.id} delay={index * 0.15} className="h-full">
+            <AnimateOnScroll
+              key={plan.id}
+              delay={index * 0.15}
+              className="h-full"
+            >
               <div
                 className={`h-full flex flex-col relative bg-white rounded-2xl p-8 ${
                   plan.popular
@@ -90,11 +94,12 @@ export default function PricingSection() {
                 </ul>
 
                 {/* CTA */}
-                <DemoAction
+                <SiteAction
                   kind="plan"
                   label={plan.cta}
-                  title={`${plan.name} 선택`}
-                  description={`${plan.name} 플랜으로 상담 신청 흐름을 확인하는 데모입니다. 실제 결제 없이 선택 완료 화면만 표시됩니다.`}
+                  title="상담 신청이 접수되었습니다"
+                  detailLabel={plan.name}
+                  description={`${plan.name} 플랜으로 상담 신청이 접수되었습니다. 담당 코치가 신청 내용을 확인한 뒤 순차적으로 연락드립니다.`}
                   className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-base font-semibold transition-all duration-200 ${
                     plan.popular
                       ? "bg-seed-green-600 text-white shadow-lg shadow-seed-green-600/25 hover:bg-seed-green-700"

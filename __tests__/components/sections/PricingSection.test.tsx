@@ -5,9 +5,9 @@ import PricingSection from "@/components/sections/PricingSection";
 describe("PricingSection", () => {
   it("섹션 제목을 렌더링한다", () => {
     render(<PricingSection />);
-    expect(
-      screen.getByRole("heading", { level: 2 })
-    ).toHaveTextContent("당신에게 맞는 플랜을 선택하세요");
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
+      "당신에게 맞는 플랜을 선택하세요",
+    );
   });
 
   it("월간/연간 플랜을 모두 렌더링한다", () => {
@@ -24,21 +24,28 @@ describe("PricingSection", () => {
 
   it("인기 배지를 연간 플랜에 표시한다", () => {
     render(<PricingSection />);
-    expect(screen.getAllByText("가장 인기 있는 선택").length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("가장 인기 있는 선택").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it("CTA 버튼을 렌더링한다", () => {
     render(<PricingSection />);
-    expect(screen.getAllByText("월간 플랜으로 시작").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("25% 이상 할인받고 시작하기").length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("월간 플랜으로 시작").length,
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("25% 이상 할인받고 시작하기").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
-  it("플랜 선택 버튼 클릭 시 데모 모달을 연다", () => {
+  it("플랜 선택 버튼 클릭 시 신청 접수 모달을 연다", () => {
     render(<PricingSection />);
 
     fireEvent.click(screen.getByRole("button", { name: "월간 플랜으로 시작" }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("월간 구독 선택")).toBeInTheDocument();
+    expect(screen.getByText("상담 신청이 접수되었습니다")).toBeInTheDocument();
+    expect(screen.getByText(/선택 플랜: 월간 구독/)).toBeInTheDocument();
   });
 });
