@@ -42,30 +42,30 @@ export const GROWTH_STAGES: {
   {
     key: "acorn",
     label: "도토리",
-    description: "코칭 여정의 시작",
+    description: "가능성을 단단히 품은 시작점",
     minSessions: 0,
-    color: "#C9A07A",
+    color: "#A46A3F",
   },
   {
     key: "seedling",
     label: "어린 묘목",
-    description: "성장의 싹이 트다",
+    description: "새싹이 방향을 잡는 시기",
     minSessions: 6,
-    color: "#7BA380",
+    color: "#16A34A",
   },
   {
     key: "oak",
     label: "참나무",
-    description: "단단한 뿌리를 내리다",
+    description: "뿌리와 줄기가 단단해지는 성장기",
     minSessions: 10,
-    color: "#547E68",
+    color: "#15803D",
   },
   {
     key: "mature-oak",
     label: "성숙한 참나무",
-    description: "깊은 성찰과 변화",
+    description: "자기 이해가 깊게 자리잡은 단계",
     minSessions: 13,
-    color: "#9C5030",
+    color: "#36583A",
   },
 ];
 
@@ -83,9 +83,7 @@ export function getGrowthStageInfo(sessionCount: number) {
 
 export function getNextStageInfo(sessionCount: number) {
   const currentStage = getGrowthStage(sessionCount);
-  const currentIndex = GROWTH_STAGES.findIndex(
-    (s) => s.key === currentStage
-  );
+  const currentIndex = GROWTH_STAGES.findIndex((s) => s.key === currentStage);
   if (currentIndex >= GROWTH_STAGES.length - 1) return null;
   return GROWTH_STAGES[currentIndex + 1];
 }

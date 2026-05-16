@@ -1,34 +1,75 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { PERSONALITY_QUESTIONS, QUESTIONS_PER_GROUP, TOTAL_GROUPS } from "@/data/assessments/personality-test";
+import { useEffect, useRef, useState, useTransition } from "react";
+import {
+  PERSONALITY_QUESTIONS,
+  QUESTIONS_PER_GROUP,
+  TOTAL_GROUPS,
+} from "@/data/assessments/personality-test";
 import { submitPersonalityTest } from "../actions";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
 const QUESTIONS_PER_PAGE = QUESTIONS_PER_GROUP; // 11문항씩 (그룹 단위)
-const SCALE_LABELS = ["전혀 아니다", "아니다", "보통이다", "그렇다", "매우 그렇다"];
+const SCALE_LABELS = [
+  "전혀 아니다",
+  "아니다",
+  "보통이다",
+  "그렇다",
+  "매우 그렇다",
+];
 
 interface PersonalityTestFormProps {
   clientId: string;
 }
 
-export default function PersonalityTestForm({ clientId }: PersonalityTestFormProps) {
-  const [answers, setAnswers] = useState<(number | null)[]>(
-    () => Array(PERSONALITY_QUESTIONS.length).fill(null)
+export default function PersonalityTestForm({
+  clientId,
+}: PersonalityTestFormProps) {
+  const [answers, setAnswers] = useState<(number | null)[]>(() =>
+    Array(PERSONALITY_QUESTIONS.length).fill(null),
   );
   const [currentPage, setCurrentPage] = useState(0);
+  const [missingQuestionIndex, setMissingQuestionIndex] = useState<
+    number | null
+  >(null);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [pendingScrollIndex, setPendingScrollIndex] = useState<number | null>(
+    null,
+  );
   const [isPending, startTransition] = useTransition();
+  const questionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const totalPages = TOTAL_GROUPS;
   const startIdx = currentPage * QUESTIONS_PER_PAGE;
-  const pageQuestions = PERSONALITY_QUESTIONS.slice(startIdx, startIdx + QUESTIONS_PER_PAGE);
+  const pageQuestions = PERSONALITY_QUESTIONS.slice(
+    startIdx,
+    startIdx + QUESTIONS_PER_PAGE,
+  );
 
-  const answeredOnPage = pageQuestions.filter((_, i) => answers[startIdx + i] !== null).length;
+  const answeredOnPage = pageQuestions.filter(
+    (_, i) => answers[startIdx + i] !== null,
+  ).length;
   const pageComplete = answeredOnPage === pageQuestions.length;
 
   const totalAnswered = answers.filter((a) => a !== null).length;
   const allComplete = totalAnswered === PERSONALITY_QUESTIONS.length;
-  const progress = Math.round((totalAnswered / PERSONALITY_QUESTIONS.length) * 100);
+  const progress = Math.round(
+    (totalAnswered / PERSONALITY_QUESTIONS.length) * 100,
+  );
+
+  useEffect(() => {
+    if (pendingScrollIndex === null) return;
+    if (Math.floor(pendingScrollIndex / QUESTIONS_PER_PAGE) !== currentPage) {
+      return;
+    }
+
+    window.setTimeout(() => {
+      const target = questionRefs.current[pendingScrollIndex];
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+      target?.focus({ preventScroll: true });
+      setPendingScrollIndex(null);
+    }, 0);
+  }, [currentPage, pendingScrollIndex]);
 
   function setAnswer(qIndex: number, value: number) {
     setAnswers((prev) => {
@@ -36,10 +77,53 @@ export default function PersonalityTestForm({ clientId }: PersonalityTestFormPro
       next[qIndex] = value;
       return next;
     });
+
+    if (missingQuestionIndex === qIndex) {
+      setMissingQuestionIndex(null);
+      setValidationMessage("");
+    }
+  }
+
+  function findFirstMissingOnPage(page: number) {
+    const pageStart = page * QUESTIONS_PER_PAGE;
+    const pageEnd = Math.min(
+      pageStart + QUESTIONS_PER_PAGE,
+      PERSONALITY_QUESTIONS.length,
+    );
+
+    for (let index = pageStart; index < pageEnd; index += 1) {
+      if (answers[index] === null) return index;
+    }
+
+    return null;
+  }
+
+  function showMissingQuestion(questionIndex: number) {
+    setCurrentPage(Math.floor(questionIndex / QUESTIONS_PER_PAGE));
+    setMissingQuestionIndex(questionIndex);
+    setValidationMessage(`${questionIndex + 1}번 문항을 체크해주세요.`);
+    setPendingScrollIndex(questionIndex);
+  }
+
+  function handleNextPage() {
+    const firstMissing = findFirstMissingOnPage(currentPage);
+    if (firstMissing !== null) {
+      showMissingQuestion(firstMissing);
+      return;
+    }
+
+    setValidationMessage("");
+    setMissingQuestionIndex(null);
+    setCurrentPage((p) => Math.min(totalPages - 1, p + 1));
   }
 
   function handleSubmit() {
-    if (!allComplete) return;
+    if (!allComplete) {
+      const firstMissing = answers.findIndex((answer) => answer === null);
+      if (firstMissing >= 0) showMissingQuestion(firstMissing);
+      return;
+    }
+
     startTransition(async () => {
       const formData = new FormData();
       formData.set("clientId", clientId);
@@ -53,8 +137,13 @@ export default function PersonalityTestForm({ clientId }: PersonalityTestFormPro
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex items-center justify-between text-xs text-text-muted mb-2">
-          <span>{currentPage + 1} / {totalPages} 그룹</span>
-          <span>{totalAnswered} / {PERSONALITY_QUESTIONS.length} 문항 ({progress}%)</span>
+          <span>
+            {currentPage + 1} / {totalPages} 그룹
+          </span>
+          <span>
+            {totalAnswered} / {PERSONALITY_QUESTIONS.length} 문항 ({progress}
+            %)
+          </span>
         </div>
         <div className="h-2 bg-bg-warm rounded-full overflow-hidden">
           <div
@@ -64,16 +153,35 @@ export default function PersonalityTestForm({ clientId }: PersonalityTestFormPro
         </div>
       </div>
 
+      {validationMessage && (
+        <div
+          role="alert"
+          className="mb-4 flex items-start gap-2 rounded-[var(--radius-sm)] border border-amber-200 bg-seed-warm-50 px-4 py-3 text-sm text-seed-earth-900"
+        >
+          <AlertCircle size={16} className="mt-0.5 shrink-0 text-amber-700" />
+          <p>{validationMessage}</p>
+        </div>
+      )}
+
       {/* Questions */}
       <div className="space-y-4">
         {pageQuestions.map((q, i) => {
           const globalIdx = startIdx + i;
           const isReverse = q.isReverse;
+          const hasValidationError = missingQuestionIndex === globalIdx;
 
           return (
             <div
               key={globalIdx}
-              className="bg-card rounded-[var(--radius-md)] border border-border-lighter p-4"
+              ref={(element) => {
+                questionRefs.current[globalIdx] = element;
+              }}
+              tabIndex={-1}
+              className={`rounded-[var(--radius-md)] border bg-card p-4 outline-none transition-colors ${
+                hasValidationError
+                  ? "border-amber-300 bg-seed-warm-50"
+                  : "border-border-lighter focus:border-seed-green-500"
+              }`}
             >
               <div className="flex gap-2 mb-3">
                 <span className="text-xs font-bold text-primary shrink-0 mt-0.5">
@@ -124,7 +232,7 @@ export default function PersonalityTestForm({ clientId }: PersonalityTestFormPro
 
         {currentPage < totalPages - 1 ? (
           <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+            onClick={handleNextPage}
             className={`flex items-center gap-1 px-4 py-2.5 text-sm rounded-[var(--radius-sm)] transition-colors cursor-pointer ${
               pageComplete
                 ? "bg-primary text-white hover:bg-primary-dark"
@@ -137,8 +245,12 @@ export default function PersonalityTestForm({ clientId }: PersonalityTestFormPro
         ) : (
           <button
             onClick={handleSubmit}
-            disabled={!allComplete || isPending}
-            className="px-6 py-2.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            disabled={isPending}
+            className={`px-6 py-2.5 text-sm rounded-[var(--radius-sm)] transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 ${
+              allComplete
+                ? "bg-primary text-white hover:bg-primary-dark"
+                : "border border-border-light hover:bg-bg-warm"
+            }`}
           >
             {isPending ? "채점 중..." : "검사 완료"}
           </button>

@@ -2,20 +2,18 @@ import { getClients } from "@/lib/store";
 import { getGrowthStageInfo, GROWTH_STAGES } from "@/types/client";
 import Link from "next/link";
 import { Users, Calendar, TrendingUp, Plus } from "lucide-react";
+import { ClientList } from "@/components/dashboard/ClientList";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const clients = await getClients();
-  const totalSessions = clients.reduce(
-    (sum, c) => sum + c.sessions.length,
-    0
-  );
+  const totalSessions = clients.reduce((sum, c) => sum + c.sessions.length, 0);
 
   const stageDistribution = GROWTH_STAGES.map((stage) => ({
     ...stage,
     count: clients.filter(
-      (c) => getGrowthStageInfo(c.sessions.length).key === stage.key
+      (c) => getGrowthStageInfo(c.sessions.length).key === stage.key,
     ).length,
   }));
 
@@ -25,7 +23,7 @@ export default async function DashboardPage() {
         ...s,
         clientName: c.name,
         clientId: c.id,
-      }))
+      })),
     )
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 5);
@@ -35,18 +33,17 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-heading text-2xl font-bold text-text">
-            대시보드
+            코치 대시보드
           </h1>
           <p className="text-sm text-text-muted mt-1">
-            코칭 현황을 한눈에 확인하세요
+            내담자 관리와 코칭 현황을 한 화면에서 확인하세요
           </p>
         </div>
         <Link
           href="/dashboard/clients/new"
           className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors"
         >
-          <Plus size={16} />
-          새 내담자 등록
+          <Plus size={16} />새 내담자 등록
         </Link>
       </div>
 
@@ -61,9 +58,7 @@ export default async function DashboardPage() {
           </div>
           <p className="text-2xl font-bold text-text">
             {clients.length}
-            <span className="text-sm font-normal text-text-light ml-1">
-              명
-            </span>
+            <span className="text-sm font-normal text-text-light ml-1">명</span>
           </p>
         </div>
         <div className="bg-card rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] p-5">
@@ -75,9 +70,7 @@ export default async function DashboardPage() {
           </div>
           <p className="text-2xl font-bold text-text">
             {totalSessions}
-            <span className="text-sm font-normal text-text-light ml-1">
-              회
-            </span>
+            <span className="text-sm font-normal text-text-light ml-1">회</span>
           </p>
         </div>
         <div className="bg-card rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] p-5">
@@ -91,11 +84,16 @@ export default async function DashboardPage() {
             {clients.length > 0
               ? (totalSessions / clients.length).toFixed(1)
               : "0"}
-            <span className="text-sm font-normal text-text-light ml-1">
-              회
-            </span>
+            <span className="text-sm font-normal text-text-light ml-1">회</span>
           </p>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <ClientList
+          clients={clients}
+          description="리스트에서 내담자를 선택해 코칭 기록과 검사 결과를 바로 관리하세요"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -145,9 +143,7 @@ export default async function DashboardPage() {
             최근 코칭 기록
           </h2>
           {recentSessions.length === 0 ? (
-            <p className="text-sm text-text-light py-4">
-              코칭 기록이 없습니다
-            </p>
+            <p className="text-sm text-text-light py-4">코칭 기록이 없습니다</p>
           ) : (
             <div className="space-y-1">
               {recentSessions.map((session) => (

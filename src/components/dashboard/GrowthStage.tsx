@@ -20,10 +20,7 @@ function AcornIcon({
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
       <rect x="22.5" y="8" width="3" height="6" rx="1.5" fill={capDark} />
-      <path
-        d="M13 24C13 20 17.5 15 24 15C30.5 15 35 20 35 24Z"
-        fill={cap}
-      />
+      <path d="M13 24C13 20 17.5 15 24 15C30.5 15 35 20 35 24Z" fill={cap} />
       <path
         d="M16 22.5C16 22.5 19 19 24 19C29 19 32 22.5 32 22.5"
         stroke={capDark}
@@ -56,14 +53,8 @@ function SeedlingIcon({
         strokeWidth="2.5"
         strokeLinecap="round"
       />
-      <path
-        d="M24 32C24 32 15 30 13 23C13 23 19 20 24 28"
-        fill={leafLight}
-      />
-      <path
-        d="M24 25C24 25 33 23 35 16C35 16 29 13 24 21"
-        fill={leafDark}
-      />
+      <path d="M24 32C24 32 15 30 13 23C13 23 19 20 24 28" fill={leafLight} />
+      <path d="M24 25C24 25 33 23 35 16C35 16 29 13 24 21" fill={leafDark} />
       <path
         d="M24 18C24 18 28 14 32 10"
         stroke={leafDark}
@@ -174,54 +165,53 @@ const STAGE_ICONS: Record<
   "mature-oak": MatureOakIcon,
 };
 
-export function GrowthStageCard({
-  sessionCount,
-}: {
-  sessionCount: number;
-}) {
+export function GrowthStageCard({ sessionCount }: { sessionCount: number }) {
   const stageInfo = getGrowthStageInfo(sessionCount);
   const nextStage = getNextStageInfo(sessionCount);
   const CurrentIcon = STAGE_ICONS[stageInfo.key];
 
   const currentStageIndex = GROWTH_STAGES.findIndex(
-    (s) => s.key === stageInfo.key
+    (s) => s.key === stageInfo.key,
   );
   const currentMin = GROWTH_STAGES[currentStageIndex].minSessions;
   const nextMin = nextStage ? nextStage.minSessions : currentMin;
   const progress = nextStage
     ? Math.min(
         ((sessionCount - currentMin) / (nextMin - currentMin)) * 100,
-        100
+        100,
       )
     : 100;
 
   return (
-    <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-8 text-center">
+    <div className="rounded-[var(--radius-lg)] border border-seed-earth-200 bg-white p-8 text-center shadow-[var(--shadow-sm)]">
       <div className="mb-4 flex justify-center">
         <div
-          className="p-5 rounded-full"
+          className="rounded-full border border-seed-earth-100 p-5"
           style={{ backgroundColor: `${stageInfo.color}14` }}
         >
           <CurrentIcon size={80} active />
         </div>
       </div>
 
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-seed-green-700">
+        SEED 성장 단계
+      </p>
       <h3
-        className="font-heading text-xl font-bold mb-1"
+        className="font-heading mb-1 text-xl font-bold"
         style={{ color: stageInfo.color }}
       >
         {stageInfo.label}
       </h3>
-      <p className="text-sm text-text-muted mb-6">{stageInfo.description}</p>
+      <p className="mb-6 text-sm text-text-muted">{stageInfo.description}</p>
 
-      <div className="text-3xl font-bold text-text mb-1">
+      <div className="mb-1 text-3xl font-bold text-seed-earth-900">
         {sessionCount}
         <span className="text-base font-normal text-text-muted">회</span>
       </div>
-      <p className="text-xs text-text-light mb-6">코칭 완료</p>
+      <p className="mb-6 text-xs text-text-light">코칭 완료</p>
 
       {/* Timeline */}
-      <div className="flex items-center justify-between gap-1 mb-3">
+      <div className="mb-3 flex items-center justify-between gap-1">
         {GROWTH_STAGES.map((stage, i) => {
           const Icon = STAGE_ICONS[stage.key];
           const isPast = i < currentStageIndex;
@@ -232,26 +222,20 @@ export function GrowthStageCard({
               className="flex flex-col items-center gap-1.5 flex-1"
             >
               <div
-                className="p-1.5 rounded-full transition-all"
+                className="rounded-full border border-transparent p-1.5 transition-all"
                 style={{
                   boxShadow: isCurrent
                     ? `0 0 0 2px white, 0 0 0 4px ${stageInfo.color}`
                     : "none",
                   backgroundColor:
-                    isCurrent || isPast
-                      ? `${stage.color}18`
-                      : "transparent",
+                    isCurrent || isPast ? `${stage.color}18` : "transparent",
                 }}
               >
                 <Icon size={28} active={isPast || isCurrent} />
               </div>
               <span
                 className={`text-[10px] leading-tight ${
-                  isCurrent
-                    ? "font-bold"
-                    : isPast
-                      ? "font-medium"
-                      : ""
+                  isCurrent ? "font-bold" : isPast ? "font-medium" : ""
                 }`}
                 style={{
                   color:
@@ -268,14 +252,14 @@ export function GrowthStageCard({
       </div>
 
       {nextStage && (
-        <div className="mt-5 pt-4 border-t border-border-lighter">
-          <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+        <div className="mt-5 border-t border-seed-earth-100 pt-4">
+          <div className="mb-2 flex items-center justify-between text-xs text-text-muted">
             <span>다음 단계까지</span>
             <span className="font-medium">
               {nextStage.minSessions - sessionCount}회 남음
             </span>
           </div>
-          <div className="w-full h-2 bg-bg rounded-full overflow-hidden">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-seed-earth-100">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -288,8 +272,8 @@ export function GrowthStageCard({
       )}
 
       {!nextStage && (
-        <div className="mt-5 pt-4 border-t border-border-lighter">
-          <p className="text-xs text-primary font-medium">
+        <div className="mt-5 border-t border-seed-earth-100 pt-4">
+          <p className="text-xs font-medium text-seed-green-700">
             최고 단계에 도달했습니다
           </p>
         </div>
@@ -310,9 +294,10 @@ export function GrowthBadge({
 
   return (
     <span
-      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"
+      className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium"
       style={{
         backgroundColor: `${stageInfo.color}14`,
+        borderColor: `${stageInfo.color}24`,
         color: stageInfo.color,
       }}
     >
