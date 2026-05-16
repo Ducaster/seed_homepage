@@ -6,6 +6,7 @@ import {
   getClients,
   saveClients,
   generateId,
+  softDeleteClient,
 } from "@/lib/store";
 import type { Client, CoachingSession, Assessment } from "@/types/client";
 
@@ -57,8 +58,7 @@ export async function updateClient(formData: FormData) {
 
 export async function deleteClient(formData: FormData) {
   const id = formData.get("id") as string;
-  const clients = (await getClients()).filter((c) => c.id !== id);
-  await saveClients(clients);
+  await softDeleteClient(id);
   redirect("/dashboard/clients");
 }
 

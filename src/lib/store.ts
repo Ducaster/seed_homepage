@@ -5,6 +5,95 @@ const SA_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
 const SA_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
 const USE_SHEETS = !!(SHEET_ID && SA_EMAIL && SA_KEY);
 
+const sheetDefinitions = [
+  {
+    title: "내담자",
+    headers: [
+      "id",
+      "이름",
+      "연락처",
+      "이메일",
+      "출생연도",
+      "성별",
+      "프로그램",
+      "등록일",
+      "메모",
+      "삭제일",
+    ],
+    dataRange: "'내담자'!A2:J",
+    writeRange: "'내담자'!A2",
+    clearColumn: "J",
+  },
+  {
+    title: "코칭기록",
+    headers: ["id", "clientId", "날짜", "회차", "소요시간", "코칭내용", "메모"],
+    dataRange: "'코칭기록'!A2:G",
+    writeRange: "'코칭기록'!A2",
+    clearColumn: "G",
+  },
+  {
+    title: "검사결과",
+    headers: ["id", "clientId", "검사도구", "날짜", "결과", "메모"],
+    dataRange: "'검사결과'!A2:F",
+    writeRange: "'검사결과'!A2",
+    clearColumn: "F",
+  },
+  {
+    title: "검사응답_성격유형",
+    headers: [
+      "assessmentId",
+      "clientId",
+      "날짜",
+      "응답JSON",
+      "주유형",
+      "날개",
+      "유형별점수JSON",
+    ],
+  },
+  {
+    title: "검사응답_애착유형",
+    headers: [
+      "assessmentId",
+      "clientId",
+      "날짜",
+      "응답JSON",
+      "애착유형",
+      "회피평균",
+      "불안평균",
+    ],
+  },
+  {
+    title: "검사응답_핵심감정",
+    headers: [
+      "assessmentId",
+      "clientId",
+      "날짜",
+      "선택항목JSON",
+      "주요유형JSON",
+      "총선택수",
+    ],
+  },
+  {
+    title: "검사응답_드로잉",
+    headers: [
+      "assessmentId",
+      "clientId",
+      "검사종류",
+      "날짜",
+      "이미지URL",
+      "메모",
+    ],
+  },
+] as const;
+
+const primarySheetDefinitions = sheetDefinitions.filter(
+  (definition): definition is (typeof sheetDefinitions)[number] & {
+    dataRange: string;
+    writeRange: string;
+    clearColumn: string;
+  } => "dataRange" in definition
+);
+
 // 서버 시작 시 환경변수 진단 로그
 console.log("[store] 환경변수 진단:", {
   GOOGLE_SHEETS_SPREADSHEET_ID: SHEET_ID ? `✅ 설정됨 (${SHEET_ID.slice(0, 8)}...)` : "❌ 없음",
@@ -59,117 +148,31 @@ async function ensureSheets() {
   const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
 
   const res = await sheets.spreadsheets.get({ spreadsheetId: id });
-  const existing =
-    res.data.sheets?.map((s) => s.properties?.title) || [];
+  const existing = res.data.sheets?.map((s) => s.properties?.title) || [];
 
-  const tabs = [
-    {
-      title: "내담자",
-      headers: [
-        "id",
-        "이름",
-        "연락처",
-        "이메일",
-        "출생연도",
-        "성별",
-        "프로그램",
-        "등록일",
-        "메모",
-      ],
-    },
-    {
-      title: "코칭기록",
-      headers: [
-        "id",
-        "clientId",
-        "날짜",
-        "회차",
-        "소요시간",
-        "코칭내용",
-        "메모",
-      ],
-    },
-    {
-      title: "검사결과",
-      headers: [
-        "id",
-        "clientId",
-        "검사도구",
-        "날짜",
-        "결과",
-        "메모",
-      ],
-    },
-    {
-      title: "검사응답_성격유형",
-      headers: [
-        "assessmentId",
-        "clientId",
-        "날짜",
-        "응답JSON",
-        "주유형",
-        "날개",
-        "유형별점수JSON",
-      ],
-    },
-    {
-      title: "검사응답_애착유형",
-      headers: [
-        "assessmentId",
-        "clientId",
-        "날짜",
-        "응답JSON",
-        "애착유형",
-        "회피평균",
-        "불안평균",
-      ],
-    },
-    {
-      title: "검사응답_핵심감정",
-      headers: [
-        "assessmentId",
-        "clientId",
-        "날짜",
-        "선택항목JSON",
-        "주요유형JSON",
-        "총선택수",
-      ],
-    },
-    {
-      title: "검사응답_드로잉",
-      headers: [
-        "assessmentId",
-        "clientId",
-        "검사종류",
-        "날짜",
-        "이미지URL",
-        "메모",
-      ],
-    },
-  ];
-
-  for (const tab of tabs) {
+  for (const tab of sheetDefinitions) {
     if (!existing.includes(tab.title)) {
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: id,
         requestBody: {
-          requests: [
-            { addSheet: { properties: { title: tab.title } } },
-          ],
+          requests: [{ addSheet: { properties: { title: tab.title } } }],
         },
       });
-      await sheets.spreadsheets.values.update({
-        spreadsheetId: id,
-        range: `'${tab.title}'!A1`,
-        valueInputOption: "RAW",
-        requestBody: { values: [tab.headers] },
-      });
     }
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: id,
+      range: `'${tab.title}'!A1`,
+      valueInputOption: "RAW",
+      requestBody: { values: [[...tab.headers]] },
+    });
   }
   sheetsReady = true;
 }
 
-async function readSheets(): Promise<Client[]> {
+async function readSheets(
+  options: { includeDeleted?: boolean } = {}
+): Promise<Client[]> {
   await ensureSheets();
   const sheets = await getSheetsClient();
   const id = process.env.GOOGLE_SHEETS_SPREADSHEET_ID!;
@@ -177,7 +180,7 @@ async function readSheets(): Promise<Client[]> {
   const [cRes, sRes, aRes] = await Promise.all([
     sheets.spreadsheets.values.get({
       spreadsheetId: id,
-      range: "'내담자'!A2:I",
+      range: "'내담자'!A2:J",
     }),
     sheets.spreadsheets.values.get({
       spreadsheetId: id,
@@ -216,7 +219,7 @@ async function readSheets(): Promise<Client[]> {
     });
   }
 
-  return (cRes.data.values || []).map((r) => ({
+  const clients = (cRes.data.values || []).map((r) => ({
     id: r[0] || "",
     name: r[1] || "",
     phone: r[2] || "",
@@ -226,9 +229,13 @@ async function readSheets(): Promise<Client[]> {
     program: r[6] || "",
     registeredAt: r[7] || "",
     notes: r[8] || "",
+    deletedAt: r[9] || null,
     sessions: sessMap[r[0]] || [],
     assessments: assMap[r[0]] || [],
   }));
+
+  if (options.includeDeleted) return clients;
+  return clients.filter((client) => !client.deletedAt);
 }
 
 async function writeSheets(clients: Client[]): Promise<void> {
@@ -246,6 +253,7 @@ async function writeSheets(clients: Client[]): Promise<void> {
     c.program,
     c.registeredAt,
     c.notes,
+    c.deletedAt || "",
   ]);
 
   const sRows = clients.flatMap((c) =>
@@ -271,53 +279,51 @@ async function writeSheets(clients: Client[]): Promise<void> {
     ])
   );
 
-  await Promise.all([
-    sheets.spreadsheets.values.clear({
-      spreadsheetId: id,
-      range: "'내담자'!A2:I",
-    }),
-    sheets.spreadsheets.values.clear({
-      spreadsheetId: id,
-      range: "'코칭기록'!A2:G",
-    }),
-    sheets.spreadsheets.values.clear({
-      spreadsheetId: id,
-      range: "'검사결과'!A2:F",
-    }),
-  ]);
+  const nextRowsByTitle: Record<string, string[][]> = {
+    내담자: cRows,
+    코칭기록: sRows,
+    검사결과: aRows,
+  };
 
-  const writes: Promise<unknown>[] = [];
-  if (cRows.length > 0) {
-    writes.push(
-      sheets.spreadsheets.values.update({
+  const currentCounts = await Promise.all(
+    primarySheetDefinitions.map(async (definition) => {
+      const res = await sheets.spreadsheets.values.get({
         spreadsheetId: id,
-        range: "'내담자'!A2",
-        valueInputOption: "RAW",
-        requestBody: { values: cRows },
-      })
-    );
-  }
-  if (sRows.length > 0) {
-    writes.push(
-      sheets.spreadsheets.values.update({
+        range: definition.dataRange,
+      });
+      return [definition.title, res.data.values?.length ?? 0] as const;
+    })
+  );
+  const currentCountByTitle = Object.fromEntries(currentCounts);
+
+  await Promise.all(
+    primarySheetDefinitions.map((definition) => {
+      const rows = nextRowsByTitle[definition.title];
+      if (rows.length === 0) return Promise.resolve();
+
+      return sheets.spreadsheets.values.update({
         spreadsheetId: id,
-        range: "'코칭기록'!A2",
+        range: definition.writeRange,
         valueInputOption: "RAW",
-        requestBody: { values: sRows },
-      })
-    );
-  }
-  if (aRows.length > 0) {
-    writes.push(
-      sheets.spreadsheets.values.update({
+        requestBody: { values: rows },
+      });
+    })
+  );
+
+  await Promise.all(
+    primarySheetDefinitions.map((definition) => {
+      const nextCount = nextRowsByTitle[definition.title].length;
+      const currentCount = currentCountByTitle[definition.title] ?? 0;
+      if (currentCount <= nextCount) return Promise.resolve();
+
+      return sheets.spreadsheets.values.clear({
         spreadsheetId: id,
-        range: "'검사결과'!A2",
-        valueInputOption: "RAW",
-        requestBody: { values: aRows },
-      })
-    );
-  }
-  await Promise.all(writes);
+        range: `'${definition.title}'!A${nextCount + 2}:${
+          definition.clearColumn
+        }`,
+      });
+    })
+  );
 }
 
 // ─── Public API (with error handling) ────────────────────
@@ -328,7 +334,7 @@ export async function getClients(): Promise<Client[]> {
     return await readSheets();
   } catch (err) {
     console.error("[store] Google Sheets 읽기 실패:", err);
-    return [];
+    throw new Error("Google Sheets 데이터를 불러오지 못했습니다.");
   }
 }
 
@@ -338,10 +344,36 @@ export async function saveClients(clients: Client[]): Promise<void> {
     return;
   }
   try {
-    await writeSheets(clients);
+    const currentClients = await readSheets({ includeDeleted: true });
+    const incomingIds = new Set(clients.map((client) => client.id));
+    const deletedClientsToPreserve = currentClients.filter(
+      (client) => client.deletedAt && !incomingIds.has(client.id)
+    );
+
+    await writeSheets([...clients, ...deletedClientsToPreserve]);
   } catch (err) {
     console.error("[store] Google Sheets 쓰기 실패:", err);
     throw new Error("데이터 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+  }
+}
+
+export async function softDeleteClient(id: string): Promise<void> {
+  if (!USE_SHEETS) {
+    console.warn("[store] Google Sheets 환경변수가 설정되지 않았습니다.");
+    return;
+  }
+
+  try {
+    const clients = await readSheets({ includeDeleted: true });
+    const client = clients.find((c) => c.id === id);
+
+    if (!client || client.deletedAt) return;
+
+    client.deletedAt = new Date().toISOString();
+    await writeSheets(clients);
+  } catch (err) {
+    console.error("[store] Google Sheets 소프트 삭제 실패:", err);
+    throw new Error("내담자 삭제 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
   }
 }
 

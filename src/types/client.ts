@@ -8,6 +8,7 @@ export interface Client {
   program: string;
   registeredAt: string;
   notes: string;
+  deletedAt?: string | null;
   sessions: CoachingSession[];
   assessments: Assessment[];
 }
