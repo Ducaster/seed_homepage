@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Sprout } from "lucide-react";
+import { LogIn, Menu, X, Sprout } from "lucide-react";
 import Container from "./Container";
-import Button from "../ui/Button";
 import { NAV_LINKS } from "@/lib/constants";
 
 export default function Header() {
@@ -35,10 +34,20 @@ export default function Header() {
           </nav>
 
           {/* CTA 버튼 */}
-          <div className="hidden md:block">
-            <Button size="sm">
+          <div className="hidden md:flex items-center gap-3">
+            <a
+              href="/login"
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-seed-earth-700 transition-colors hover:bg-seed-earth-100 hover:text-seed-green-700"
+            >
+              <LogIn className="h-4 w-4" />
+              코치 로그인
+            </a>
+            <a
+              href="#pricing"
+              className="inline-flex items-center justify-center rounded-xl bg-seed-green-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-seed-green-600/25 transition-colors hover:bg-seed-green-700"
+            >
               시작하기
-            </Button>
+            </a>
           </div>
 
           {/* 모바일 햄버거 */}
@@ -69,9 +78,21 @@ export default function Header() {
                   {link.label}
                 </a>
               ))}
-              <Button size="sm" className="mt-2 w-full">
+              <a
+                href="/login"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-seed-earth-200 px-4 py-2 text-sm font-semibold text-seed-earth-700 transition-colors hover:border-seed-green-600 hover:text-seed-green-700"
+                onClick={() => setMobileOpen(false)}
+              >
+                <LogIn className="h-4 w-4" />
+                코치 로그인
+              </a>
+              <a
+                href="#pricing"
+                className="mt-1 inline-flex w-full items-center justify-center rounded-xl bg-seed-green-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-seed-green-600/25 transition-colors hover:bg-seed-green-700"
+                onClick={() => setMobileOpen(false)}
+              >
                 시작하기
-              </Button>
+              </a>
             </div>
           </nav>
         )}

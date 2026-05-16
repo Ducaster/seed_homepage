@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import PricingSection from "@/components/sections/PricingSection";
 
@@ -31,5 +31,14 @@ describe("PricingSection", () => {
     render(<PricingSection />);
     expect(screen.getAllByText("월간 플랜으로 시작").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("25% 이상 할인받고 시작하기").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("플랜 선택 버튼 클릭 시 데모 모달을 연다", () => {
+    render(<PricingSection />);
+
+    fireEvent.click(screen.getByRole("button", { name: "월간 플랜으로 시작" }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("월간 구독 선택")).toBeInTheDocument();
   });
 });

@@ -1,5 +1,6 @@
 import { Sprout } from "lucide-react";
 import Container from "./Container";
+import DemoAction from "../ui/DemoAction";
 
 export default function Footer() {
   return (
@@ -12,15 +13,21 @@ export default function Footer() {
           </div>
 
           <div className="flex gap-6 text-sm">
-            <a href="#" className="hover:text-white transition-colors">
-              이용약관
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              개인정보처리방침
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              문의하기
-            </a>
+            <DemoAction
+              kind="terms"
+              label="이용약관"
+              className="hover:text-white transition-colors"
+            />
+            <DemoAction
+              kind="privacy"
+              label="개인정보처리방침"
+              className="hover:text-white transition-colors"
+            />
+            <DemoAction
+              kind="contact"
+              label="문의하기"
+              className="hover:text-white transition-colors"
+            />
           </div>
 
           <p className="text-sm text-seed-earth-300">

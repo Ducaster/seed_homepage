@@ -4,7 +4,7 @@ import { Check, X } from "lucide-react";
 import Container from "../layout/Container";
 import SectionHeading from "../ui/SectionHeading";
 import Badge from "../ui/Badge";
-import Button from "../ui/Button";
+import DemoAction from "../ui/DemoAction";
 import AnimateOnScroll from "../ui/AnimateOnScroll";
 import { PRICING_PLANS } from "@/lib/constants";
 
@@ -90,12 +90,17 @@ export default function PricingSection() {
                 </ul>
 
                 {/* CTA */}
-                <Button
-                  variant={plan.popular ? "primary" : "outline"}
-                  className="w-full"
-                >
-                  {plan.cta}
-                </Button>
+                <DemoAction
+                  kind="plan"
+                  label={plan.cta}
+                  title={`${plan.name} 선택`}
+                  description={`${plan.name} 플랜으로 상담 신청 흐름을 확인하는 데모입니다. 실제 결제 없이 선택 완료 화면만 표시됩니다.`}
+                  className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-base font-semibold transition-all duration-200 ${
+                    plan.popular
+                      ? "bg-seed-green-600 text-white shadow-lg shadow-seed-green-600/25 hover:bg-seed-green-700"
+                      : "border-2 border-seed-earth-200 text-seed-earth-700 hover:border-seed-green-600 hover:text-seed-green-600"
+                  }`}
+                />
               </div>
             </AnimateOnScroll>
           ))}
