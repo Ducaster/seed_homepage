@@ -16,10 +16,14 @@ export default function TestimonialSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {TESTIMONIALS.map((testimonial, index) => (
-            <AnimateOnScroll key={testimonial.name} delay={index * 0.15} className="h-full">
+            <AnimateOnScroll
+              key={testimonial.name}
+              delay={index * 0.15}
+              className="h-full"
+            >
               <div className="h-full relative bg-seed-earth-50 rounded-2xl p-8 flex flex-col">
                 <Quote className="w-8 h-8 text-seed-green-200 mb-4" />
-                <p className="text-seed-earth-700 leading-relaxed mb-6 flex-1">
+                <p className="text-seed-earth-700 leading-relaxed mb-6 flex-1 break-keep">
                   {testimonial.content}
                 </p>
                 <div className="flex items-center gap-3 mt-auto">
@@ -30,7 +34,7 @@ export default function TestimonialSection() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-seed-earth-900">
+                    <p className="text-sm font-semibold text-seed-earth-900 break-keep">
                       {testimonial.name}
                     </p>
                     <p className="text-xs text-seed-earth-700">

@@ -44,10 +44,10 @@ export default function WhySeedSection() {
                   <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-seed-green-50 mb-6">
                     {Icon && <Icon className="w-6 h-6 text-seed-green-600" />}
                   </div>
-                  <h3 className="text-lg font-bold text-seed-earth-900 mb-3">
+                  <h3 className="text-lg font-bold text-seed-earth-900 mb-3 break-keep">
                     {vp.title}
                   </h3>
-                  <p className="text-seed-earth-700 leading-relaxed">
+                  <p className="text-seed-earth-700 leading-relaxed break-keep">
                     {vp.description}
                   </p>
                 </div>

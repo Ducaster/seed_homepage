@@ -24,4 +24,13 @@ describe("ProgramSection", () => {
       screen.getAllByText("씨앗에서 느티나무까지").length,
     ).toBeGreaterThanOrEqual(1);
   });
+
+  it("카드 안 긴 설명 문구에 한국어 줄바꿈 스타일을 적용한다", () => {
+    render(<ProgramSection />);
+    expect(
+      screen.getByText(
+        "성격유형, 핵심 감정, 인생그래프 등 SEED의 검사와 1:1 대화를 연결해 지금의 나를 이해하고 다음 성장을 설계합니다.",
+      ),
+    ).toHaveClass("break-keep");
+  });
 });

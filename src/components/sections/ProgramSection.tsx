@@ -34,15 +34,15 @@ export default function ProgramSection() {
                   </div>
 
                   {/* 제목 */}
-                  <h3 className="text-xl font-bold text-seed-earth-900 mb-1">
+                  <h3 className="text-xl font-bold text-seed-earth-900 mb-1 break-keep">
                     {program.title}
                   </h3>
-                  <p className="text-sm font-medium text-seed-green-600 mb-4">
+                  <p className="text-sm font-medium text-seed-green-600 mb-4 break-keep">
                     {program.subtitle}
                   </p>
 
                   {/* 설명 */}
-                  <p className="text-seed-earth-700 leading-relaxed text-sm">
+                  <p className="text-seed-earth-700 leading-relaxed text-sm break-keep">
                     {program.description}
                   </p>
                 </div>

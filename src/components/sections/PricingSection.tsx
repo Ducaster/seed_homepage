@@ -48,10 +48,10 @@ export default function PricingSection() {
 
                 {/* 플랜 정보 */}
                 <div className="text-center mb-8">
-                  <h3 className="text-xl font-bold text-seed-earth-900">
+                  <h3 className="text-xl font-bold text-seed-earth-900 break-keep">
                     {plan.name}
                   </h3>
-                  <p className="text-sm text-seed-earth-700 mt-1">
+                  <p className="text-sm text-seed-earth-700 mt-1 break-keep">
                     {plan.tagline}
                   </p>
 
@@ -65,7 +65,7 @@ export default function PricingSection() {
                       </span>
                     </div>
                     {plan.annualTotal && (
-                      <p className="text-sm text-seed-earth-700 mt-1">
+                      <p className="text-sm text-seed-earth-700 mt-1 break-keep">
                         {plan.annualTotal}{" "}
                         {plan.discount && (
                           <span className="text-seed-green-600 font-semibold">
@@ -89,8 +89,8 @@ export default function PricingSection() {
                       <span
                         className={
                           feature.included
-                            ? "text-seed-earth-900"
-                            : "text-seed-earth-300"
+                            ? "text-seed-earth-900 break-keep"
+                            : "text-seed-earth-300 break-keep"
                         }
                       >
                         {feature.text}
@@ -108,7 +108,7 @@ export default function PricingSection() {
                     plan.popular
                       ? "bg-seed-green-600 text-white shadow-lg shadow-seed-green-600/25 hover:bg-seed-green-700"
                       : "border-2 border-seed-earth-200 text-seed-earth-700 hover:border-seed-green-600 hover:text-seed-green-600"
-                  }`}
+                  } break-keep text-center`}
                 />
               </div>
             </AnimateOnScroll>

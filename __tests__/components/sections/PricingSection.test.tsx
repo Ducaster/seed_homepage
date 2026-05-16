@@ -61,6 +61,20 @@ describe("PricingSection", () => {
     ).toBeGreaterThanOrEqual(1);
   });
 
+  it("카드 안 플랜 설명과 기능 문구에 한국어 줄바꿈 스타일을 적용한다", () => {
+    render(<PricingSection />);
+
+    expect(screen.getByText("부담없이 시작하고 싶다면")).toHaveClass(
+      "break-keep",
+    );
+    expect(screen.getAllByText("전체 콘텐츠 무제한 이용")[0]).toHaveClass(
+      "break-keep",
+    );
+    expect(
+      screen.getByRole("button", { name: "월간 플랜으로 시작" }),
+    ).toHaveClass("break-keep");
+  });
+
   it("플랜 선택 버튼 제출 시 신청 내용을 저장하고 접수 완료 모달을 연다", async () => {
     render(<PricingSection />);
 
