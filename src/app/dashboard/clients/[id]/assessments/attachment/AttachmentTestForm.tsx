@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { ATTACHMENT_QUESTIONS, SCALE_LABELS } from "@/data/assessments/attachment-test";
+import { useRef, useState, useTransition } from "react";
+import {
+  ATTACHMENT_QUESTIONS,
+  SCALE_LABELS,
+} from "@/data/assessments/attachment-test";
 import { submitAttachmentTest } from "../actions";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -11,23 +14,35 @@ interface AttachmentTestFormProps {
   clientId: string;
 }
 
-export default function AttachmentTestForm({ clientId }: AttachmentTestFormProps) {
-  const [answers, setAnswers] = useState<(number | null)[]>(
-    () => Array(ATTACHMENT_QUESTIONS.length).fill(null)
+export default function AttachmentTestForm({
+  clientId,
+}: AttachmentTestFormProps) {
+  const [answers, setAnswers] = useState<(number | null)[]>(() =>
+    Array(ATTACHMENT_QUESTIONS.length).fill(null),
   );
   const [currentPage, setCurrentPage] = useState(0);
   const [isPending, startTransition] = useTransition();
+  const submitLockedRef = useRef(false);
 
-  const totalPages = Math.ceil(ATTACHMENT_QUESTIONS.length / QUESTIONS_PER_PAGE);
+  const totalPages = Math.ceil(
+    ATTACHMENT_QUESTIONS.length / QUESTIONS_PER_PAGE,
+  );
   const startIdx = currentPage * QUESTIONS_PER_PAGE;
-  const pageQuestions = ATTACHMENT_QUESTIONS.slice(startIdx, startIdx + QUESTIONS_PER_PAGE);
+  const pageQuestions = ATTACHMENT_QUESTIONS.slice(
+    startIdx,
+    startIdx + QUESTIONS_PER_PAGE,
+  );
 
-  const answeredOnPage = pageQuestions.filter((q) => answers[q.number - 1] !== null).length;
+  const answeredOnPage = pageQuestions.filter(
+    (q) => answers[q.number - 1] !== null,
+  ).length;
   const pageComplete = answeredOnPage === pageQuestions.length;
 
   const totalAnswered = answers.filter((a) => a !== null).length;
   const allComplete = totalAnswered === ATTACHMENT_QUESTIONS.length;
-  const progress = Math.round((totalAnswered / ATTACHMENT_QUESTIONS.length) * 100);
+  const progress = Math.round(
+    (totalAnswered / ATTACHMENT_QUESTIONS.length) * 100,
+  );
 
   function setAnswer(qNumber: number, value: number) {
     setAnswers((prev) => {
@@ -38,12 +53,19 @@ export default function AttachmentTestForm({ clientId }: AttachmentTestFormProps
   }
 
   function handleSubmit() {
-    if (!allComplete) return;
+    if (!allComplete || isPending || submitLockedRef.current) return;
+
+    submitLockedRef.current = true;
     startTransition(async () => {
-      const formData = new FormData();
-      formData.set("clientId", clientId);
-      formData.set("answers", JSON.stringify(answers));
-      await submitAttachmentTest(formData);
+      try {
+        const formData = new FormData();
+        formData.set("clientId", clientId);
+        formData.set("answers", JSON.stringify(answers));
+        await submitAttachmentTest(formData);
+      } catch (error) {
+        submitLockedRef.current = false;
+        throw error;
+      }
     });
   }
 
@@ -52,8 +74,12 @@ export default function AttachmentTestForm({ clientId }: AttachmentTestFormProps
       {/* Progress */}
       <div className="mb-6">
         <div className="flex items-center justify-between text-xs text-text-muted mb-2">
-          <span>{currentPage + 1} / {totalPages} 페이지</span>
-          <span>{totalAnswered} / {ATTACHMENT_QUESTIONS.length} 문항 ({progress}%)</span>
+          <span>
+            {currentPage + 1} / {totalPages} 페이지
+          </span>
+          <span>
+            {totalAnswered} / {ATTACHMENT_QUESTIONS.length} 문항 ({progress}%)
+          </span>
         </div>
         <div className="h-2 bg-bg-warm rounded-full overflow-hidden">
           <div
@@ -74,9 +100,7 @@ export default function AttachmentTestForm({ clientId }: AttachmentTestFormProps
               <span className="text-xs font-bold text-primary shrink-0 mt-0.5">
                 {q.number}.
               </span>
-              <p className="text-sm text-text leading-relaxed">
-                {q.text}
-              </p>
+              <p className="text-sm text-text leading-relaxed">{q.text}</p>
             </div>
 
             <div className="flex gap-1.5">
@@ -115,7 +139,9 @@ export default function AttachmentTestForm({ clientId }: AttachmentTestFormProps
 
         {currentPage < totalPages - 1 ? (
           <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+            onClick={() =>
+              setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
+            }
             className={`flex items-center gap-1 px-4 py-2.5 text-sm rounded-[var(--radius-sm)] transition-colors cursor-pointer ${
               pageComplete
                 ? "bg-primary text-white hover:bg-primary-dark"
@@ -131,10 +157,15 @@ export default function AttachmentTestForm({ clientId }: AttachmentTestFormProps
             disabled={!allComplete || isPending}
             className="px-6 py-2.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isPending ? "채점 중..." : "검사 완료"}
+            {isPending ? "결과 저장 중입니다..." : "검사 완료"}
           </button>
         )}
       </div>
+      {isPending && (
+        <p role="status" className="mt-3 text-center text-xs text-text-muted">
+          검사 결과를 저장 중입니다. 잠시만 기다려주세요.
+        </p>
+      )}
     </div>
   );
 }

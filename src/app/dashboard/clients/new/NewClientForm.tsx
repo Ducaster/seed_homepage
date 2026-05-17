@@ -4,6 +4,7 @@ import { useState } from "react";
 import { addClient } from "@/app/dashboard/actions";
 import { programs } from "@/data/programs";
 import { PHONE_FORMAT_MESSAGE, PHONE_INPUT_PATTERN } from "@/lib/phone";
+import { PendingSubmitButton } from "@/components/ui/PendingSubmitButton";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, FileText } from "lucide-react";
 
@@ -330,12 +331,15 @@ export function NewClientForm({ error }: { error?: string }) {
           >
             취소
           </Link>
-          <button
-            type="submit"
-            className="flex-1 py-3 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer"
-          >
-            등록하기
-          </button>
+          <div className="flex-1">
+            <PendingSubmitButton
+              pendingLabel="등록 중입니다..."
+              statusText="내담자 정보를 구글시트에 저장 중입니다. 잠시만 기다려주세요."
+              className="w-full py-3 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer disabled:opacity-50"
+            >
+              등록하기
+            </PendingSubmitButton>
+          </div>
         </div>
       </form>
     </div>

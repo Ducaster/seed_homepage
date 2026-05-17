@@ -38,6 +38,7 @@ export default function PersonalityTestForm({
   );
   const [isPending, startTransition] = useTransition();
   const questionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const submitLockedRef = useRef(false);
 
   const totalPages = TOTAL_GROUPS;
   const startIdx = currentPage * QUESTIONS_PER_PAGE;
@@ -118,17 +119,25 @@ export default function PersonalityTestForm({
   }
 
   function handleSubmit() {
+    if (isPending || submitLockedRef.current) return;
+
     if (!allComplete) {
       const firstMissing = answers.findIndex((answer) => answer === null);
       if (firstMissing >= 0) showMissingQuestion(firstMissing);
       return;
     }
 
+    submitLockedRef.current = true;
     startTransition(async () => {
-      const formData = new FormData();
-      formData.set("clientId", clientId);
-      formData.set("answers", JSON.stringify(answers));
-      await submitPersonalityTest(formData);
+      try {
+        const formData = new FormData();
+        formData.set("clientId", clientId);
+        formData.set("answers", JSON.stringify(answers));
+        await submitPersonalityTest(formData);
+      } catch (error) {
+        submitLockedRef.current = false;
+        throw error;
+      }
     });
   }
 
@@ -252,10 +261,15 @@ export default function PersonalityTestForm({
                 : "border border-border-light hover:bg-bg-warm"
             }`}
           >
-            {isPending ? "채점 중..." : "검사 완료"}
+            {isPending ? "결과 저장 중입니다..." : "검사 완료"}
           </button>
         )}
       </div>
+      {isPending && (
+        <p role="status" className="mt-3 text-center text-xs text-text-muted">
+          검사 결과를 저장 중입니다. 잠시만 기다려주세요.
+        </p>
+      )}
     </div>
   );
 }

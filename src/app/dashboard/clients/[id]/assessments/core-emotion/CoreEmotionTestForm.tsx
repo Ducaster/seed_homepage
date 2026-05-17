@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { EMOTION_TYPES } from "@/data/assessments/core-emotion-test";
 import { submitCoreEmotionTest } from "../actions";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
@@ -11,7 +11,9 @@ interface CoreEmotionTestFormProps {
   clientId: string;
 }
 
-export default function CoreEmotionTestForm({ clientId }: CoreEmotionTestFormProps) {
+export default function CoreEmotionTestForm({
+  clientId,
+}: CoreEmotionTestFormProps) {
   const [selections, setSelections] = useState<Record<number, Set<string>>>(
     () => {
       const init: Record<number, Set<string>> = {};
@@ -19,17 +21,19 @@ export default function CoreEmotionTestForm({ clientId }: CoreEmotionTestFormPro
         init[t.id] = new Set();
       }
       return init;
-    }
+    },
   );
   const [currentPage, setCurrentPage] = useState(0);
   const [isPending, startTransition] = useTransition();
+  const submitLockedRef = useRef(false);
 
   const totalPages = Math.ceil(EMOTION_TYPES.length / TYPES_PER_PAGE);
   const startIdx = currentPage * TYPES_PER_PAGE;
   const pageTypes = EMOTION_TYPES.slice(startIdx, startIdx + TYPES_PER_PAGE);
 
   const totalSelected = Object.values(selections).reduce(
-    (sum, s) => sum + s.size, 0
+    (sum, s) => sum + s.size,
+    0,
   );
 
   function toggleItem(typeId: number, item: string) {
@@ -47,19 +51,27 @@ export default function CoreEmotionTestForm({ clientId }: CoreEmotionTestFormPro
   }
 
   function handleSubmit() {
-    startTransition(async () => {
-      const serialized: Record<number, string[]> = {};
-      for (const [typeId, items] of Object.entries(selections)) {
-        const arr = Array.from(items);
-        if (arr.length > 0) {
-          serialized[Number(typeId)] = arr;
-        }
-      }
+    if (totalSelected === 0 || isPending || submitLockedRef.current) return;
 
-      const formData = new FormData();
-      formData.set("clientId", clientId);
-      formData.set("selections", JSON.stringify(serialized));
-      await submitCoreEmotionTest(formData);
+    submitLockedRef.current = true;
+    startTransition(async () => {
+      try {
+        const serialized: Record<number, string[]> = {};
+        for (const [typeId, items] of Object.entries(selections)) {
+          const arr = Array.from(items);
+          if (arr.length > 0) {
+            serialized[Number(typeId)] = arr;
+          }
+        }
+
+        const formData = new FormData();
+        formData.set("clientId", clientId);
+        formData.set("selections", JSON.stringify(serialized));
+        await submitCoreEmotionTest(formData);
+      } catch (error) {
+        submitLockedRef.current = false;
+        throw error;
+      }
     });
   }
 
@@ -68,7 +80,9 @@ export default function CoreEmotionTestForm({ clientId }: CoreEmotionTestFormPro
       {/* Progress */}
       <div className="mb-6">
         <div className="flex items-center justify-between text-xs text-text-muted mb-2">
-          <span>{currentPage + 1} / {totalPages} 페이지</span>
+          <span>
+            {currentPage + 1} / {totalPages} 페이지
+          </span>
           <span>총 {totalSelected}개 선택</span>
         </div>
         <div className="h-2 bg-bg-warm rounded-full overflow-hidden">
@@ -145,7 +159,9 @@ export default function CoreEmotionTestForm({ clientId }: CoreEmotionTestFormPro
 
         {currentPage < totalPages - 1 ? (
           <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+            onClick={() =>
+              setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
+            }
             className="flex items-center gap-1 px-4 py-2.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors cursor-pointer"
           >
             다음
@@ -157,10 +173,15 @@ export default function CoreEmotionTestForm({ clientId }: CoreEmotionTestFormPro
             disabled={totalSelected === 0 || isPending}
             className="px-6 py-2.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isPending ? "분석 중..." : "검사 완료"}
+            {isPending ? "결과 저장 중입니다..." : "검사 완료"}
           </button>
         )}
       </div>
+      {isPending && (
+        <p role="status" className="mt-3 text-center text-xs text-text-muted">
+          검사 결과를 저장 중입니다. 잠시만 기다려주세요.
+        </p>
+      )}
     </div>
   );
 }

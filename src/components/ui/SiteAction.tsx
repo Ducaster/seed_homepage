@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   CheckCircle2,
   FileText,
@@ -73,6 +73,7 @@ export default function SiteAction({
   const [open, setOpen] = useState(false);
   const [submission, setSubmission] =
     useState<SubmissionState>(initialSubmission);
+  const submittingRef = useRef<SubmissionKind | null>(null);
 
   const isPlanSuccess =
     submission.kind === "plan" && submission.status === "success";
@@ -85,12 +86,19 @@ export default function SiteAction({
 
   async function handlePlanSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submittingRef.current) return;
+
+    submittingRef.current = "plan";
     const formData = new FormData(event.currentTarget);
 
     setSubmission({ kind: "plan", status: "submitting" });
-    const result = await submitPlanApplication(formData);
+    const result = await submitPlanApplication(formData).catch(() => ({
+      ok: false as const,
+      error: "신청 접수에 실패했습니다. 잠시 후 다시 시도해주세요.",
+    }));
 
     if (result.ok) {
+      submittingRef.current = null;
       setSubmission({
         kind: "plan",
         status: "success",
@@ -99,6 +107,7 @@ export default function SiteAction({
       return;
     }
 
+    submittingRef.current = null;
     setSubmission({
       kind: "plan",
       status: "error",
@@ -108,12 +117,19 @@ export default function SiteAction({
 
   async function handleContactSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submittingRef.current) return;
+
+    submittingRef.current = "contact";
     const formData = new FormData(event.currentTarget);
 
     setSubmission({ kind: "contact", status: "submitting" });
-    const result = await submitContactInquiry(formData);
+    const result = await submitContactInquiry(formData).catch(() => ({
+      ok: false as const,
+      error: "문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.",
+    }));
 
     if (result.ok) {
+      submittingRef.current = null;
       setSubmission({
         kind: "contact",
         status: "success",
@@ -122,6 +138,7 @@ export default function SiteAction({
       return;
     }
 
+    submittingRef.current = null;
     setSubmission({
       kind: "contact",
       status: "error",
@@ -159,24 +176,26 @@ export default function SiteAction({
         </div>
       ) : (
         <form className="space-y-3" onSubmit={handlePlanSubmit}>
-          <input
-            type="hidden"
-            name="planName"
-            value={detailLabel ?? "SEED 프로그램"}
-          />
-          <input
-            required
-            name="name"
-            placeholder="이름"
-            className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600"
-          />
-          <input
-            required
-            name="phone"
-            type="tel"
-            placeholder="전화번호"
-            className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600"
-          />
+          <fieldset disabled={isPlanSubmitting} className="space-y-3">
+            <input
+              type="hidden"
+              name="planName"
+              value={detailLabel ?? "SEED 프로그램"}
+            />
+            <input
+              required
+              name="name"
+              placeholder="이름"
+              className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600 disabled:bg-seed-earth-50 disabled:text-seed-earth-500"
+            />
+            <input
+              required
+              name="phone"
+              type="tel"
+              placeholder="전화번호"
+              className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600 disabled:bg-seed-earth-50 disabled:text-seed-earth-500"
+            />
+          </fieldset>
           {submission.kind === "plan" && submission.status === "error" && (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
               {submission.error}
@@ -188,8 +207,16 @@ export default function SiteAction({
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-seed-green-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-seed-green-700 disabled:cursor-not-allowed disabled:bg-seed-earth-300"
           >
             <Send className="h-4 w-4" />
-            {isPlanSubmitting ? "접수 중..." : "신청 접수하기"}
+            {isPlanSubmitting ? "접수 중입니다..." : "신청 접수하기"}
           </button>
+          {isPlanSubmitting && (
+            <p
+              role="status"
+              className="text-center text-xs text-seed-earth-600"
+            >
+              신청 내용을 접수 중입니다. 잠시만 기다려주세요.
+            </p>
+          )}
         </form>
       ),
       actionLabel: isPlanSuccess ? "확인" : undefined,
@@ -329,25 +356,27 @@ export default function SiteAction({
         </div>
       ) : (
         <form className="space-y-3" onSubmit={handleContactSubmit}>
-          <input
-            required
-            name="name"
-            placeholder="이름"
-            className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600"
-          />
-          <input
-            required
-            name="contact"
-            placeholder="연락처 또는 이메일"
-            className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600"
-          />
-          <textarea
-            required
-            name="message"
-            rows={4}
-            placeholder="문의 내용을 입력해주세요"
-            className="w-full resize-none rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600"
-          />
+          <fieldset disabled={isContactSubmitting} className="space-y-3">
+            <input
+              required
+              name="name"
+              placeholder="이름"
+              className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600 disabled:bg-seed-earth-50 disabled:text-seed-earth-500"
+            />
+            <input
+              required
+              name="contact"
+              placeholder="연락처 또는 이메일"
+              className="w-full rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600 disabled:bg-seed-earth-50 disabled:text-seed-earth-500"
+            />
+            <textarea
+              required
+              name="message"
+              rows={4}
+              placeholder="문의 내용을 입력해주세요"
+              className="w-full resize-none rounded-lg border border-seed-earth-200 px-3 py-2 text-sm text-seed-earth-900 outline-none transition-colors focus:border-seed-green-600 disabled:bg-seed-earth-50 disabled:text-seed-earth-500"
+            />
+          </fieldset>
           {submission.kind === "contact" && submission.status === "error" && (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
               {submission.error}
@@ -359,8 +388,16 @@ export default function SiteAction({
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-seed-green-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-seed-green-700 disabled:cursor-not-allowed disabled:bg-seed-earth-300"
           >
             <Send className="h-4 w-4" />
-            {isContactSubmitting ? "접수 중..." : "문의 접수하기"}
+            {isContactSubmitting ? "접수 중입니다..." : "문의 접수하기"}
           </button>
+          {isContactSubmitting && (
+            <p
+              role="status"
+              className="text-center text-xs text-seed-earth-600"
+            >
+              문의 내용을 접수 중입니다. 잠시만 기다려주세요.
+            </p>
+          )}
         </form>
       ),
       actionLabel: isContactSuccess ? "확인" : undefined,
@@ -376,6 +413,7 @@ export default function SiteAction({
         type="button"
         className={className}
         onClick={() => {
+          submittingRef.current = null;
           setSubmission(initialSubmission);
           setOpen(true);
         }}

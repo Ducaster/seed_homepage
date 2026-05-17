@@ -63,4 +63,46 @@ describe("Footer", () => {
     expect(screen.getByText(/INQ-TEST/)).toBeInTheDocument();
     expect(screen.getByText(/영업일 기준 1-2일/)).toBeInTheDocument();
   });
+
+  it("문의 제출 중에는 안내 문구를 표시하고 중복 제출을 막는다", async () => {
+    let resolveSubmit!: (value: { ok: true; receiptId: string }) => void;
+    vi.mocked(submitContactInquiry).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveSubmit = resolve;
+        }),
+    );
+
+    render(<Footer />);
+
+    fireEvent.click(screen.getByRole("button", { name: "문의하기" }));
+    fireEvent.change(screen.getByPlaceholderText("이름"), {
+      target: { value: "홍길동" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("연락처 또는 이메일"), {
+      target: { value: "010-0000-0000" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("문의 내용을 입력해주세요"), {
+      target: { value: "상담 일정을 알고 싶습니다." },
+    });
+
+    const form = screen
+      .getByRole("button", { name: "문의 접수하기" })
+      .closest("form");
+    expect(form).not.toBeNull();
+
+    fireEvent.submit(form as HTMLFormElement);
+    fireEvent.submit(form as HTMLFormElement);
+
+    expect(submitContactInquiry).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "잠시만 기다려주세요",
+    );
+
+    resolveSubmit({ ok: true, receiptId: "INQ-TEST" });
+
+    expect(
+      await screen.findByRole("heading", { name: "문의가 접수되었습니다" }),
+    ).toBeInTheDocument();
+  });
 });

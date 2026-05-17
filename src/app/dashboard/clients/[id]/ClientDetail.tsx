@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Client } from "@/types/client";
 import { GrowthStageCard } from "@/components/dashboard/GrowthStage";
+import { PendingSubmitButton } from "@/components/ui/PendingSubmitButton";
 import {
   addSession,
   addAssessment,
@@ -139,12 +140,13 @@ export default function ClientDetail({
                   rows={2}
                   className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-bg focus:outline-none focus:border-primary resize-none"
                 />
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer"
+                <PendingSubmitButton
+                  pendingLabel="저장 중입니다..."
+                  statusText="내담자 정보를 저장 중입니다. 잠시만 기다려주세요."
+                  className="w-full py-2 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer disabled:opacity-50"
                 >
                   저장
-                </button>
+                </PendingSubmitButton>
               </form>
             ) : (
               <div className="space-y-3 text-sm">
@@ -194,12 +196,13 @@ export default function ClientDetail({
             }}
           >
             <input type="hidden" name="id" value={client.id} />
-            <button
-              type="submit"
-              className="w-full py-2.5 text-sm text-red-400 hover:text-red-600 hover:bg-red-50 rounded-[var(--radius-sm)] transition-colors cursor-pointer"
+            <PendingSubmitButton
+              pendingLabel="삭제 처리 중입니다..."
+              statusText="내담자를 목록에서 숨김 처리하는 중입니다. 잠시만 기다려주세요."
+              className="w-full py-2.5 text-sm text-red-400 hover:text-red-600 hover:bg-red-50 rounded-[var(--radius-sm)] transition-colors cursor-pointer disabled:opacity-50"
             >
               내담자 삭제
-            </button>
+            </PendingSubmitButton>
           </form>
         </div>
 
@@ -282,12 +285,13 @@ export default function ClientDetail({
                     className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-white focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer"
+                <PendingSubmitButton
+                  pendingLabel="기록 저장 중입니다..."
+                  statusText="코칭 기록을 저장 중입니다. 잠시만 기다려주세요."
+                  className="w-full py-2 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {client.sessions.length + 1}회차 기록 저장
-                </button>
+                </PendingSubmitButton>
               </form>
             )}
 
@@ -374,12 +378,14 @@ export default function ClientDetail({
                             name="sessionId"
                             value={session.id}
                           />
-                          <button
-                            type="submit"
-                            className="text-xs text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                          <PendingSubmitButton
+                            pendingLabel="삭제 중입니다..."
+                            statusText="코칭 기록을 삭제 중입니다. 잠시만 기다려주세요."
+                            statusClassName="text-left"
+                            className="text-xs text-red-400 hover:text-red-600 transition-colors cursor-pointer disabled:opacity-50"
                           >
                             기록 삭제
-                          </button>
+                          </PendingSubmitButton>
                         </form>
                       </div>
                     )}
@@ -494,12 +500,13 @@ export default function ClientDetail({
                     className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-white focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer"
+                <PendingSubmitButton
+                  pendingLabel="검사 결과 저장 중입니다..."
+                  statusText="검사 결과를 저장 중입니다. 잠시만 기다려주세요."
+                  className="w-full py-2 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer disabled:opacity-50"
                 >
                   검사 결과 저장
-                </button>
+                </PendingSubmitButton>
               </form>
             )}
 
@@ -588,12 +595,14 @@ export default function ClientDetail({
                             name="assessmentId"
                             value={assessment.id}
                           />
-                          <button
-                            type="submit"
-                            className="text-xs text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                          <PendingSubmitButton
+                            pendingLabel="삭제 중입니다..."
+                            statusText="검사 기록을 삭제 중입니다. 잠시만 기다려주세요."
+                            statusClassName="text-left"
+                            className="text-xs text-red-400 hover:text-red-600 transition-colors cursor-pointer disabled:opacity-50"
                           >
                             기록 삭제
-                          </button>
+                          </PendingSubmitButton>
                         </form>
                       </div>
                     )}

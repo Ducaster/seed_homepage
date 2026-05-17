@@ -8,9 +8,14 @@ interface DrawingCanvasProps {
   height?: number;
   template?: "six-shapes" | "life-graph";
   onExport: (dataUrl: string) => void;
+  isExporting?: boolean;
 }
 
-function drawSixShapesTemplate(ctx: CanvasRenderingContext2D, w: number, h: number) {
+function drawSixShapesTemplate(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+) {
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, w, h);
 
@@ -23,17 +28,20 @@ function drawSixShapesTemplate(ctx: CanvasRenderingContext2D, w: number, h: numb
   const size = Math.min(colW, rowH) * 0.2;
 
   // 1) Circle - top left
-  const cx1 = colW * 0.5, cy1 = rowH * 0.5;
+  const cx1 = colW * 0.5,
+    cy1 = rowH * 0.5;
   ctx.beginPath();
   ctx.arc(cx1, cy1, size, 0, Math.PI * 2);
   ctx.stroke();
 
   // 2) Square - top center
-  const cx2 = colW * 1.5, cy2 = rowH * 0.5;
+  const cx2 = colW * 1.5,
+    cy2 = rowH * 0.5;
   ctx.strokeRect(cx2 - size, cy2 - size, size * 2, size * 2);
 
   // 3) Triangle - top right
-  const cx3 = colW * 2.5, cy3 = rowH * 0.5;
+  const cx3 = colW * 2.5,
+    cy3 = rowH * 0.5;
   ctx.beginPath();
   ctx.moveTo(cx3, cy3 - size);
   ctx.lineTo(cx3 + size, cy3 + size);
@@ -42,7 +50,8 @@ function drawSixShapesTemplate(ctx: CanvasRenderingContext2D, w: number, h: numb
   ctx.stroke();
 
   // 4) Diamond - bottom left
-  const cx4 = colW * 0.5, cy4 = rowH * 1.5;
+  const cx4 = colW * 0.5,
+    cy4 = rowH * 1.5;
   ctx.beginPath();
   ctx.moveTo(cx4, cy4 - size);
   ctx.lineTo(cx4 + size, cy4);
@@ -52,7 +61,8 @@ function drawSixShapesTemplate(ctx: CanvasRenderingContext2D, w: number, h: numb
   ctx.stroke();
 
   // 5) Cross - bottom center
-  const cx5 = colW * 1.5, cy5 = rowH * 1.5;
+  const cx5 = colW * 1.5,
+    cy5 = rowH * 1.5;
   const t = size * 0.35;
   ctx.beginPath();
   ctx.moveTo(cx5 - t, cy5 - size);
@@ -71,18 +81,33 @@ function drawSixShapesTemplate(ctx: CanvasRenderingContext2D, w: number, h: numb
   ctx.stroke();
 
   // 6) S-curve / wave - bottom right
-  const cx6 = colW * 2.5, cy6 = rowH * 1.5;
+  const cx6 = colW * 2.5,
+    cy6 = rowH * 1.5;
   ctx.beginPath();
   ctx.moveTo(cx6 - size, cy6);
-  ctx.bezierCurveTo(cx6 - size * 0.3, cy6 - size, cx6 + size * 0.3, cy6 + size, cx6 + size, cy6);
+  ctx.bezierCurveTo(
+    cx6 - size * 0.3,
+    cy6 - size,
+    cx6 + size * 0.3,
+    cy6 + size,
+    cx6 + size,
+    cy6,
+  );
   ctx.stroke();
 }
 
-function drawLifeGraphTemplate(ctx: CanvasRenderingContext2D, w: number, h: number) {
+function drawLifeGraphTemplate(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+) {
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, w, h);
 
-  const left = 70, right = 30, top = 40, bottom = 55;
+  const left = 70,
+    right = 30,
+    top = 40,
+    bottom = 55;
   const gw = w - left - right;
   const gh = h - top - bottom;
   const centerY = top + gh / 2;
@@ -143,7 +168,19 @@ function drawLifeGraphTemplate(ctx: CanvasRenderingContext2D, w: number, h: numb
 
   // Y-axis labels
   ctx.textAlign = "right";
-  const yLabels = ["매우 좋음", "", "좋음", "", "", "보통", "", "", "나쁨", "", "매우 나쁨"];
+  const yLabels = [
+    "매우 좋음",
+    "",
+    "좋음",
+    "",
+    "",
+    "보통",
+    "",
+    "",
+    "나쁨",
+    "",
+    "매우 나쁨",
+  ];
   for (let i = 0; i < yLabels.length; i++) {
     if (yLabels[i]) {
       const y = top + (gh / 10) * i;
@@ -169,6 +206,7 @@ export default function DrawingCanvas({
   height = 600,
   template,
   onExport,
+  isExporting = false,
 }: DrawingCanvasProps) {
   const bgCanvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -344,8 +382,14 @@ export default function DrawingCanvas({
   }
 
   const colors = [
-    "#1C1410", "#9C5030", "#547E68", "#506E8E",
-    "#7E5E78", "#C9A07A", "#E74C3C", "#2ECC71",
+    "#1C1410",
+    "#9C5030",
+    "#547E68",
+    "#506E8E",
+    "#7E5E78",
+    "#C9A07A",
+    "#E74C3C",
+    "#2ECC71",
   ];
 
   return (
@@ -356,12 +400,19 @@ export default function DrawingCanvas({
           {colors.map((c) => (
             <button
               key={c}
-              onClick={() => { setColor(c); setTool("pen"); }}
+              onClick={() => {
+                setColor(c);
+                setTool("pen");
+              }}
               className="w-7 h-7 rounded-full border-2 transition-transform cursor-pointer"
               style={{
                 backgroundColor: c,
-                borderColor: color === c && tool === "pen" ? "var(--color-primary)" : "transparent",
-                transform: color === c && tool === "pen" ? "scale(1.2)" : "scale(1)",
+                borderColor:
+                  color === c && tool === "pen"
+                    ? "var(--color-primary)"
+                    : "transparent",
+                transform:
+                  color === c && tool === "pen" ? "scale(1.2)" : "scale(1)",
               }}
             />
           ))}
@@ -376,7 +427,9 @@ export default function DrawingCanvas({
           >
             <Minus size={14} />
           </button>
-          <span className="text-xs text-text-muted w-6 text-center">{lineWidth}</span>
+          <span className="text-xs text-text-muted w-6 text-center">
+            {lineWidth}
+          </span>
           <button
             onClick={() => setLineWidth(Math.min(20, lineWidth + 1))}
             className="p-1.5 rounded-[var(--radius-sm)] hover:bg-bg-warm transition-colors cursor-pointer"
@@ -390,7 +443,9 @@ export default function DrawingCanvas({
         <button
           onClick={() => setTool(tool === "eraser" ? "pen" : "eraser")}
           className={`p-2 rounded-[var(--radius-sm)] transition-colors cursor-pointer ${
-            tool === "eraser" ? "bg-primary text-white" : "hover:bg-bg-warm text-text-muted"
+            tool === "eraser"
+              ? "bg-primary text-white"
+              : "hover:bg-bg-warm text-text-muted"
           }`}
         >
           <Eraser size={16} />
@@ -436,9 +491,10 @@ export default function DrawingCanvas({
 
       <button
         onClick={handleExport}
-        className="w-full py-3 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer"
+        disabled={isExporting}
+        className="w-full py-3 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
       >
-        검사 완료 및 저장
+        {isExporting ? "저장 중입니다..." : "검사 완료 및 저장"}
       </button>
     </div>
   );
