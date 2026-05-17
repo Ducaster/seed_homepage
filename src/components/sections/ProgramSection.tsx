@@ -1,13 +1,15 @@
 "use client";
 
-import { Sprout } from "lucide-react";
+import { Dna, Heart, TrendingUp } from "lucide-react";
 import Container from "../layout/Container";
 import SectionHeading from "../ui/SectionHeading";
 import AnimateOnScroll from "../ui/AnimateOnScroll";
 import { PROGRAMS } from "@/lib/constants";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Sprout,
+  Dna,
+  Heart,
+  TrendingUp,
 };
 
 export default function ProgramSection() {
@@ -18,7 +20,7 @@ export default function ProgramSection() {
           <SectionHeading title="당신의 가능성을 발견하는 SEED 프로그램" />
         </AnimateOnScroll>
 
-        <div className="mx-auto grid max-w-[520px] grid-cols-1 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {PROGRAMS.map((program, index) => {
             const Icon = iconMap[program.icon];
             return (

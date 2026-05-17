@@ -10,26 +10,26 @@ describe("ProgramSection", () => {
     );
   });
 
-  it("SEED-코칭 프로그램만 렌더링한다", () => {
+  it("기존 3개 프로그램 카드를 렌더링한다", () => {
     render(<ProgramSection />);
-    expect(screen.getAllByText("SEED-코칭").length).toBeGreaterThanOrEqual(1);
-    expect(screen.queryByText("성격유형검사")).not.toBeInTheDocument();
-    expect(screen.queryByText("핵심 감정 검사")).not.toBeInTheDocument();
-    expect(screen.queryByText("인생그래프")).not.toBeInTheDocument();
+    expect(screen.getByText("성격유형검사")).toBeInTheDocument();
+    expect(screen.getByText("핵심 감정 검사")).toBeInTheDocument();
+    expect(screen.getByText("인생그래프")).toBeInTheDocument();
+    expect(screen.queryByText("SEED-코칭")).not.toBeInTheDocument();
   });
 
   it("프로그램 부제목을 렌더링한다", () => {
     render(<ProgramSection />);
-    expect(
-      screen.getAllByText("씨앗에서 느티나무까지").length,
-    ).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("씨앗의 DNA")).toBeInTheDocument();
+    expect(screen.getByText("토양과 수분")).toBeInTheDocument();
+    expect(screen.getByText("나이테 (성장의 기록)")).toBeInTheDocument();
   });
 
   it("카드 안 긴 설명 문구에 한국어 줄바꿈 스타일을 적용한다", () => {
     render(<ProgramSection />);
     expect(
       screen.getByText(
-        "성격유형, 핵심 감정, 인생그래프 등 SEED의 검사와 1:1 대화를 연결해 지금의 나를 이해하고 다음 성장을 설계합니다.",
+        "당신만의 고유한 기질을 확인합니다. 남들과 비교하며 억지로 맞추려 하기보다, 내 안에 새겨진 본연의 성격 엔진을 이해해 보세요. 당신이 어떤 상황에서 가장 빛나고, 어떤 순간에 에너지를 얻는지 분석하여 당신만의 고유한 생존 전략과 성장 방향을 알려드립니다.",
       ),
     ).toHaveClass("break-keep");
   });
