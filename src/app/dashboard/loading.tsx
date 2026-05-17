@@ -9,7 +9,7 @@ export default function DashboardLoading() {
     >
       <Loader2 className="mb-4 h-7 w-7 animate-spin text-primary" />
       <p className="font-heading text-lg font-bold text-text">
-        구글시트 데이터를 불러오는 중입니다
+        데이터를 불러오는 중입니다
       </p>
       <p className="mt-2 text-sm text-text-muted">잠시만 기다려주세요.</p>
     </div>

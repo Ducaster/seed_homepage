@@ -189,7 +189,7 @@ function sampleClient(overrides: Partial<Client> = {}): Client {
   };
 }
 
-describe("Google Sheets store safety", () => {
+describe("external data store safety", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.doUnmock("googleapis");
@@ -199,9 +199,7 @@ describe("Google Sheets store safety", () => {
     setupGoogleSheetsMock(createState(), { failValuesGet: true });
     const { getClients } = await importStore();
 
-    await expect(getClients()).rejects.toThrow(
-      "Google Sheets 데이터를 불러오지 못했습니다.",
-    );
+    await expect(getClients()).rejects.toThrow("데이터를 불러오지 못했습니다.");
   });
 
   it("normalizes legacy acorn program names from Sheets", async () => {

@@ -45,7 +45,7 @@ describe("PendingSubmitButton", () => {
       <form>
         <PendingSubmitButton
           pendingLabel="등록 중..."
-          statusText="구글시트에 저장 중입니다. 잠시만 기다려주세요."
+          statusText="데이터를 저장 중입니다. 잠시만 기다려주세요."
         >
           등록하기
         </PendingSubmitButton>
@@ -58,7 +58,7 @@ describe("PendingSubmitButton", () => {
       "true",
     );
     expect(screen.getByRole("status")).toHaveTextContent(
-      "구글시트에 저장 중입니다. 잠시만 기다려주세요.",
+      "데이터를 저장 중입니다. 잠시만 기다려주세요.",
     );
   });
 });

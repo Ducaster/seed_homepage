@@ -324,18 +324,18 @@ export function NewClientForm({ error }: { error?: string }) {
           />
         </div>
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex items-start gap-3 pt-2">
           <Link
             href="/dashboard/clients"
-            className="flex-1 py-3 text-center rounded-[var(--radius-sm)] border border-border-light text-text-muted text-sm hover:bg-bg transition-colors"
+            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-sm)] border border-border-light text-sm text-text-muted transition-colors hover:bg-bg"
           >
             취소
           </Link>
           <div className="flex-1">
             <PendingSubmitButton
               pendingLabel="등록 중입니다..."
-              statusText="내담자 정보를 구글시트에 저장 중입니다. 잠시만 기다려주세요."
-              className="w-full py-3 bg-primary text-white rounded-[var(--radius-sm)] text-sm font-medium hover:bg-primary-dark transition-colors cursor-pointer disabled:opacity-50"
+              statusText="내담자 정보를 저장 중입니다. 잠시만 기다려주세요."
+              className="h-12 w-full rounded-[var(--radius-sm)] bg-primary text-sm font-medium text-white transition-colors hover:bg-primary-dark cursor-pointer disabled:opacity-50"
             >
               등록하기
             </PendingSubmitButton>

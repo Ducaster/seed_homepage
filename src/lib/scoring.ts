@@ -6,7 +6,10 @@
  * - 핵심감정 (16유형 체크박스)
  */
 
-import { TYPE_ORDER, QUESTIONS_PER_GROUP } from "@/data/assessments/personality-test";
+import {
+  TYPE_ORDER,
+  QUESTIONS_PER_GROUP,
+} from "@/data/assessments/personality-test";
 import type { EnneagramTypeInfo } from "@/data/assessments/enneagram-types";
 import { ENNEAGRAM_TYPES } from "@/data/assessments/enneagram-types";
 import { ATTACHMENT_QUESTIONS } from "@/data/assessments/attachment-test";
@@ -55,7 +58,7 @@ export function scoreEnneagram(answers: number[]): EnneagramResult {
       const raw = answers[answerIdx] ?? 3; // 미응답은 중간값 3
 
       // 마지막 문항(qIdx === 10)은 역채점
-      const value = qIdx === 10 ? (6 - raw) : raw;
+      const value = qIdx === 10 ? 6 - raw : raw;
       total += value;
     }
 
@@ -124,7 +127,12 @@ export interface AttachmentResult {
   /** 유형 설명 */
   description: string;
   /** 개별 문항 점수 (디버깅/상세보기용) */
-  itemScores: { number: number; raw: number; scored: number; dimension: string }[];
+  itemScores: {
+    number: number;
+    raw: number;
+    scored: number;
+    dimension: string;
+  }[];
 }
 
 /**
@@ -149,7 +157,7 @@ export function scoreAttachment(answers: number[]): AttachmentResult {
 
   for (const q of ATTACHMENT_QUESTIONS) {
     const raw = answers[q.number - 1] ?? 3;
-    const scored = q.isReverse ? (6 - raw) : raw;
+    const scored = q.isReverse ? 6 - raw : raw;
 
     itemScores.push({
       number: q.number,
@@ -224,13 +232,13 @@ export interface CoreEmotionResult {
  * 가장 두드러진 감정 유형을 파악
  */
 export function scoreCoreEmotion(
-  selections: Record<number, string[]>
+  selections: Record<number, string[]>,
 ): CoreEmotionResult {
   const typeCounts: CoreEmotionResult["typeCounts"] = [];
   let totalSelected = 0;
   const categoryBreakdown: Record<string, number> = {
-    "대인관계": 0,
-    "가족관계": 0,
+    대인관계: 0,
+    가족관계: 0,
     "일과 공부": 0,
     "나의 감정": 0,
   };
@@ -251,9 +259,7 @@ export function scoreCoreEmotion(
 
   // 상위 3개 유형 추출
   const sorted = [...typeCounts].sort((a, b) => b.count - a.count);
-  const dominantTypes = sorted
-    .filter((t) => t.count > 0)
-    .slice(0, 3);
+  const dominantTypes = sorted.filter((t) => t.count > 0).slice(0, 3);
 
   return {
     typeCounts,
@@ -263,7 +269,7 @@ export function scoreCoreEmotion(
   };
 }
 
-// ─── 결과 직렬화 (Google Sheets 저장용) ─────────────────
+// ─── 결과 직렬화 (외부 저장소 저장용) ───────────────────
 
 /**
  * 에니어그램 결과를 JSON 문자열로 직렬화
