@@ -51,4 +51,18 @@ describe("ClientList", () => {
       screen.getByRole("link", { name: "내담자 등록하기" }),
     ).toHaveAttribute("href", "/dashboard/clients/new");
   });
+
+  it("모바일에서는 헤더 액션과 내담자 행이 세로 흐름으로 전환된다", () => {
+    render(<ClientList clients={[makeClient()]} />);
+
+    expect(screen.getByTestId("client-list-header")).toHaveClass("flex-col");
+    expect(screen.getByRole("link", { name: /새 내담자 등록/ })).toHaveClass(
+      "w-full",
+      "sm:w-auto",
+    );
+    expect(screen.getByTestId("client-row-client-1")).toHaveClass(
+      "grid-cols-1",
+      "md:grid-cols-[1.5fr_1fr_0.7fr_1fr_32px]",
+    );
+  });
 });

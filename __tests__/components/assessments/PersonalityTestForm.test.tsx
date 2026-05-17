@@ -46,4 +46,17 @@ describe("PersonalityTestForm", () => {
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
   });
+
+  it("모바일에서 5점 척도 버튼을 좁은 화면에 맞는 그리드로 배치한다", () => {
+    render(<PersonalityTestForm clientId="client-1" />);
+
+    const firstQuestion = screen.getByText("1.").closest("div[tabindex='-1']");
+    expect(firstQuestion).not.toBeNull();
+
+    expect(
+      within(firstQuestion as HTMLElement)
+        .getByText("전혀 아니다")
+        .closest("[data-testid='scale-options']"),
+    ).toHaveClass("grid", "grid-cols-2", "min-[520px]:grid-cols-5");
+  });
 });

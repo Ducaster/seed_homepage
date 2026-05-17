@@ -395,8 +395,8 @@ export default function DrawingCanvas({
   return (
     <div className="space-y-3">
       {/* Toolbar */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="grid grid-cols-4 gap-1.5 min-[420px]:flex min-[420px]:items-center">
           {colors.map((c) => (
             <button
               key={c}
@@ -465,7 +465,7 @@ export default function DrawingCanvas({
       </div>
 
       {/* Canvas */}
-      <div className="relative border border-border-light rounded-[var(--radius-md)] overflow-hidden bg-white">
+      <div className="relative overflow-hidden rounded-[var(--radius-md)] border border-border-light bg-white">
         <canvas
           ref={bgCanvasRef}
           width={width}

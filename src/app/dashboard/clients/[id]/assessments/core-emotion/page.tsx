@@ -26,11 +26,12 @@ export default async function CoreEmotionPage({
       </Link>
 
       <div className="mb-6">
-        <h1 className="font-heading text-2xl font-bold text-text mb-1">
+        <h1 className="font-heading text-xl font-bold text-text mb-1 sm:text-2xl">
           핵심감정 검사
         </h1>
-        <p className="text-sm text-text-muted">
-          {client.name}님 &mdash; 16가지 감정 유형에서 자신에게 해당되는 항목을 모두 체크해주세요.
+        <p className="break-keep text-sm text-text-muted">
+          {client.name}님 &mdash; 16가지 감정 유형에서 자신에게 해당되는 항목을
+          모두 체크해주세요.
         </p>
       </div>
 

@@ -46,8 +46,8 @@ export default async function CoreEmotionResultPage({
         검사 커리큘럼
       </Link>
 
-      <div className="mb-8">
-        <h1 className="font-heading text-2xl font-bold text-text mb-1">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-heading text-xl font-bold text-text mb-1 sm:text-2xl">
           핵심감정 검사 결과
         </h1>
         <p className="text-sm text-text-muted">
@@ -57,13 +57,13 @@ export default async function CoreEmotionResultPage({
 
       <div className="space-y-6">
         {/* Summary */}
-        <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-md)] p-6 border border-primary/20">
+        <div className="rounded-[var(--radius-lg)] border border-primary/20 bg-card p-4 shadow-[var(--shadow-md)] sm:p-6">
           <h2 className="font-heading text-lg font-bold text-text mb-3">
             주요 감정 유형
           </h2>
           <p className="text-sm text-text-muted mb-4">
-            총 {resultData.totalSelected}개 항목을 선택하셨습니다.
-            아래는 가장 많이 선택된 감정 유형입니다.
+            총 {resultData.totalSelected}개 항목을 선택하셨습니다. 아래는 가장
+            많이 선택된 감정 유형입니다.
           </p>
           <div className="space-y-3">
             {resultData.dominantTypes.map((t, i) => (
@@ -71,12 +71,14 @@ export default async function CoreEmotionResultPage({
                 <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-white shrink-0">
                   {i + 1}
                 </span>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-text">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex items-center justify-between gap-3">
+                    <span className="break-keep text-sm font-medium text-text">
                       {t.title}
                     </span>
-                    <span className="text-xs text-text-muted">{t.count}개 선택</span>
+                    <span className="shrink-0 text-xs text-text-muted">
+                      {t.count}개 선택
+                    </span>
                   </div>
                   <div className="h-2.5 bg-bg-warm rounded-full overflow-hidden">
                     <div

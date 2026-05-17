@@ -40,7 +40,7 @@ export default function DrawingTestForm({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-hidden">
       <DrawingCanvas
         template={template}
         onExport={handleExport}

@@ -73,7 +73,7 @@ export default function AttachmentTestForm({
     <div>
       {/* Progress */}
       <div className="mb-6">
-        <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+        <div className="mb-2 flex flex-col gap-1 text-xs text-text-muted min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
           <span>
             {currentPage + 1} / {totalPages} 페이지
           </span>
@@ -103,7 +103,7 @@ export default function AttachmentTestForm({
               <p className="text-sm text-text leading-relaxed">{q.text}</p>
             </div>
 
-            <div className="flex gap-1.5">
+            <div className="grid grid-cols-2 gap-1.5 min-[520px]:grid-cols-5">
               {SCALE_LABELS.map((label, idx) => {
                 const value = idx + 1;
                 const selected = answers[q.number - 1] === value;
@@ -111,7 +111,7 @@ export default function AttachmentTestForm({
                   <button
                     key={idx}
                     onClick={() => setAnswer(q.number, value)}
-                    className={`flex-1 py-2 px-1 text-xs rounded-[var(--radius-sm)] border transition-all cursor-pointer ${
+                    className={`min-h-10 px-2 py-2 text-xs rounded-[var(--radius-sm)] border transition-all cursor-pointer ${
                       selected
                         ? "bg-primary text-white border-primary"
                         : "bg-bg border-border-lighter hover:border-primary/40 text-text-muted"
@@ -127,11 +127,11 @@ export default function AttachmentTestForm({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between mt-6 gap-3">
+      <div className="mt-6 flex flex-col-reverse gap-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
         <button
           onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
           disabled={currentPage === 0}
-          className="flex items-center gap-1 px-4 py-2.5 text-sm rounded-[var(--radius-sm)] border border-border-light hover:bg-bg-warm transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+          className="flex w-full items-center justify-center gap-1 rounded-[var(--radius-sm)] border border-border-light px-4 py-2.5 text-sm transition-colors hover:bg-bg-warm disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer min-[420px]:w-auto"
         >
           <ChevronLeft size={16} />
           이전
@@ -142,7 +142,7 @@ export default function AttachmentTestForm({
             onClick={() =>
               setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
             }
-            className={`flex items-center gap-1 px-4 py-2.5 text-sm rounded-[var(--radius-sm)] transition-colors cursor-pointer ${
+            className={`flex w-full items-center justify-center gap-1 rounded-[var(--radius-sm)] px-4 py-2.5 text-sm transition-colors cursor-pointer min-[420px]:w-auto ${
               pageComplete
                 ? "bg-primary text-white hover:bg-primary-dark"
                 : "border border-border-light hover:bg-bg-warm"
@@ -155,7 +155,7 @@ export default function AttachmentTestForm({
           <button
             onClick={handleSubmit}
             disabled={!allComplete || isPending}
-            className="px-6 py-2.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full rounded-[var(--radius-sm)] bg-primary px-6 py-2.5 text-sm text-white transition-colors hover:bg-primary-dark disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer min-[420px]:w-auto"
           >
             {isPending ? "결과 저장 중입니다..." : "검사 완료"}
           </button>

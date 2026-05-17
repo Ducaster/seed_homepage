@@ -261,7 +261,7 @@ export function GrowthStageCard({ sessionCount }: { sessionCount: number }) {
     : 100;
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-seed-earth-200 bg-white p-8 text-center shadow-[var(--shadow-sm)]">
+    <div className="rounded-[var(--radius-lg)] border border-seed-earth-200 bg-white p-5 text-center shadow-[var(--shadow-sm)] sm:p-8">
       <div className="mb-4 flex justify-center">
         <div
           className="rounded-full border border-seed-earth-100 p-5"
@@ -312,7 +312,7 @@ export function GrowthStageCard({ sessionCount }: { sessionCount: number }) {
                 <Icon size={28} active={isPast || isCurrent} />
               </div>
               <span
-                className={`text-[10px] leading-tight ${
+                className={`text-[9px] leading-tight sm:text-[10px] ${
                   isCurrent ? "font-bold" : isPast ? "font-medium" : ""
                 }`}
                 style={{

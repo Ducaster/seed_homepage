@@ -51,8 +51,8 @@ export default async function AttachmentResultPage({
         검사 커리큘럼
       </Link>
 
-      <div className="mb-8">
-        <h1 className="font-heading text-2xl font-bold text-text mb-1">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-heading text-xl font-bold text-text mb-1 sm:text-2xl">
           애착유형 검사 결과
         </h1>
         <p className="text-sm text-text-muted">
@@ -62,7 +62,7 @@ export default async function AttachmentResultPage({
 
       <div className="space-y-6">
         {/* Main Result */}
-        <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-md)] p-6 border border-primary/20">
+        <div className="rounded-[var(--radius-lg)] border border-primary/20 bg-card p-4 shadow-[var(--shadow-md)] sm:p-6">
           <h2 className="font-heading text-xl font-bold text-text mb-2">
             {typeInfo.label}
           </h2>
@@ -73,10 +73,14 @@ export default async function AttachmentResultPage({
 
         {/* Scores */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-card rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] p-5">
-            <h3 className="text-xs font-medium text-text-muted mb-3">회피 차원 (Avoidance)</h3>
+          <div className="rounded-[var(--radius-md)] bg-card p-4 shadow-[var(--shadow-sm)] sm:p-5">
+            <h3 className="text-xs font-medium text-text-muted mb-3">
+              회피 차원 (Avoidance)
+            </h3>
             <div className="flex items-end gap-2">
-              <span className="text-3xl font-bold text-text">{resultData.avoidanceMean}</span>
+              <span className="text-3xl font-bold text-text">
+                {resultData.avoidanceMean}
+              </span>
               <span className="text-sm text-text-muted mb-1">/ 5.00</span>
             </div>
             <div className="mt-3 h-3 bg-bg-warm rounded-full overflow-hidden">
@@ -92,10 +96,14 @@ export default async function AttachmentResultPage({
             </p>
           </div>
 
-          <div className="bg-card rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] p-5">
-            <h3 className="text-xs font-medium text-text-muted mb-3">불안 차원 (Anxiety)</h3>
+          <div className="rounded-[var(--radius-md)] bg-card p-4 shadow-[var(--shadow-sm)] sm:p-5">
+            <h3 className="text-xs font-medium text-text-muted mb-3">
+              불안 차원 (Anxiety)
+            </h3>
             <div className="flex items-end gap-2">
-              <span className="text-3xl font-bold text-text">{resultData.anxietyMean}</span>
+              <span className="text-3xl font-bold text-text">
+                {resultData.anxietyMean}
+              </span>
               <span className="text-sm text-text-muted mb-1">/ 5.00</span>
             </div>
             <div className="mt-3 h-3 bg-bg-warm rounded-full overflow-hidden">
@@ -113,9 +121,11 @@ export default async function AttachmentResultPage({
         </div>
 
         {/* 2x2 Matrix Visual */}
-        <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-6">
-          <h3 className="font-heading font-bold text-text mb-4">애착유형 매트릭스</h3>
-          <div className="relative aspect-square max-w-md mx-auto">
+        <div className="overflow-hidden rounded-[var(--radius-lg)] bg-card p-4 shadow-[var(--shadow-sm)] sm:p-6">
+          <h3 className="font-heading font-bold text-text mb-4">
+            애착유형 매트릭스
+          </h3>
+          <div className="relative mx-auto aspect-square max-w-md">
             {/* Axes */}
             <div className="absolute inset-0 border border-border-light rounded-[var(--radius-sm)]">
               <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border-lighter" />
@@ -129,18 +139,26 @@ export default async function AttachmentResultPage({
             <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-text-muted">
               불안 높음
             </span>
-            <span className="absolute top-1/2 -left-12 -translate-y-1/2 text-xs text-text-muted">
+            <span className="absolute top-1/2 -left-12 hidden -translate-y-1/2 text-xs text-text-muted sm:block">
               회피 낮음
             </span>
-            <span className="absolute top-1/2 -right-12 -translate-y-1/2 text-xs text-text-muted">
+            <span className="absolute top-1/2 -right-12 hidden -translate-y-1/2 text-xs text-text-muted sm:block">
               회피 높음
             </span>
 
             {/* Quadrant labels */}
-            <span className="absolute top-4 left-4 text-xs text-[#547E68] font-medium">안정형</span>
-            <span className="absolute top-4 right-4 text-xs text-[#506E8E] font-medium">회피형</span>
-            <span className="absolute bottom-4 left-4 text-xs text-[#9C5030] font-medium">불안형</span>
-            <span className="absolute bottom-4 right-4 text-xs text-[#7E5E78] font-medium">공포형</span>
+            <span className="absolute top-4 left-4 text-xs text-[#547E68] font-medium">
+              안정형
+            </span>
+            <span className="absolute top-4 right-4 text-xs text-[#506E8E] font-medium">
+              회피형
+            </span>
+            <span className="absolute bottom-4 left-4 text-xs text-[#9C5030] font-medium">
+              불안형
+            </span>
+            <span className="absolute bottom-4 right-4 text-xs text-[#7E5E78] font-medium">
+              공포형
+            </span>
 
             {/* Dot */}
             <div
@@ -154,33 +172,42 @@ export default async function AttachmentResultPage({
         </div>
 
         {/* All Types Info */}
-        <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-6">
-          <h3 className="font-heading font-bold text-text mb-4">4가지 애착유형 안내</h3>
+        <div className="rounded-[var(--radius-lg)] bg-card p-4 shadow-[var(--shadow-sm)] sm:p-6">
+          <h3 className="font-heading font-bold text-text mb-4">
+            4가지 애착유형 안내
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {(Object.entries(ATTACHMENT_TYPE_INFO) as [AttachmentType, typeof typeInfo][]).map(
-              ([key, info]) => (
-                <div
-                  key={key}
-                  className={`p-4 rounded-[var(--radius-sm)] border ${
-                    key === resultData.type
-                      ? "border-primary/30 bg-primary-pale"
-                      : "border-border-lighter bg-bg"
+            {(
+              Object.entries(ATTACHMENT_TYPE_INFO) as [
+                AttachmentType,
+                typeof typeInfo,
+              ][]
+            ).map(([key, info]) => (
+              <div
+                key={key}
+                className={`p-4 rounded-[var(--radius-sm)] border ${
+                  key === resultData.type
+                    ? "border-primary/30 bg-primary-pale"
+                    : "border-border-lighter bg-bg"
+                }`}
+              >
+                <h4
+                  className={`text-sm font-medium mb-1 ${
+                    key === resultData.type ? "text-primary" : "text-text"
                   }`}
                 >
-                  <h4 className={`text-sm font-medium mb-1 ${
-                    key === resultData.type ? "text-primary" : "text-text"
-                  }`}>
-                    {info.label}
-                    {key === resultData.type && (
-                      <span className="text-xs ml-1.5 font-normal text-primary/70">
-                        (나의 유형)
-                      </span>
-                    )}
-                  </h4>
-                  <p className="text-xs text-text-muted leading-relaxed">{info.description}</p>
-                </div>
-              )
-            )}
+                  {info.label}
+                  {key === resultData.type && (
+                    <span className="text-xs ml-1.5 font-normal text-primary/70">
+                      (나의 유형)
+                    </span>
+                  )}
+                </h4>
+                <p className="text-xs text-text-muted leading-relaxed">
+                  {info.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

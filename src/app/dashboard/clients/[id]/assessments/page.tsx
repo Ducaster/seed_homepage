@@ -1,7 +1,14 @@
 import { getClient } from "@/lib/store";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, Circle, Pencil, FileQuestion, ListChecks } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Circle,
+  Pencil,
+  FileQuestion,
+  ListChecks,
+} from "lucide-react";
 import { ASSESSMENTS } from "@/data/assessments";
 import type { AssessmentSlug } from "@/data/assessments";
 
@@ -31,9 +38,7 @@ export default async function AssessmentsPage({
 
   if (!client) notFound();
 
-  const completedMap = new Map(
-    client.assessments.map((a) => [a.toolName, a])
-  );
+  const completedMap = new Map(client.assessments.map((a) => [a.toolName, a]));
 
   return (
     <div>
@@ -45,18 +50,20 @@ export default async function AssessmentsPage({
         {client.name} 상세보기
       </Link>
 
-      <div className="mb-8">
-        <h1 className="font-heading text-2xl font-bold text-text mb-1">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-heading text-xl font-bold text-text mb-1 sm:text-2xl">
           검사 커리큘럼
         </h1>
-        <p className="text-sm text-text-muted">
+        <p className="break-keep text-sm text-text-muted">
           {client.name}님의 코칭 검사 진행 현황
         </p>
       </div>
 
       <div className="space-y-3">
         {ASSESSMENTS.map((assessment) => {
-          const doneAssessment = completedMap.get(SLUG_TO_TOOL[assessment.slug]);
+          const doneAssessment = completedMap.get(
+            SLUG_TO_TOOL[assessment.slug],
+          );
           const isDone = !!doneAssessment;
           const Icon = TYPE_ICON[assessment.type] ?? FileQuestion;
           const href = doneAssessment
@@ -67,7 +74,7 @@ export default async function AssessmentsPage({
             <Link
               key={assessment.slug}
               href={href}
-              className={`group flex items-center gap-4 p-5 rounded-[var(--radius-md)] border transition-all ${
+              className={`group flex items-start gap-3 rounded-[var(--radius-md)] border p-4 transition-all sm:items-center sm:gap-4 sm:p-5 ${
                 isDone
                   ? "bg-card border-border-lighter hover:border-primary/30"
                   : "bg-card border-border-light hover:border-primary hover:shadow-[var(--shadow-sm)]"
@@ -83,14 +90,14 @@ export default async function AssessmentsPage({
                 {assessment.order}
               </span>
 
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <Icon size={14} className="text-text-light shrink-0" />
-                  <h3 className="font-medium text-text truncate">
+                  <h3 className="break-keep font-medium text-text sm:truncate">
                     {assessment.title}
                   </h3>
                 </div>
-                <p className="text-xs text-text-muted mt-0.5">
+                <p className="mt-0.5 break-keep text-xs text-text-muted">
                   {assessment.subtitle}
                 </p>
               </div>
@@ -98,7 +105,10 @@ export default async function AssessmentsPage({
               {isDone ? (
                 <CheckCircle size={20} className="text-primary shrink-0" />
               ) : (
-                <Circle size={20} className="text-border shrink-0 group-hover:text-primary/40" />
+                <Circle
+                  size={20}
+                  className="text-border shrink-0 group-hover:text-primary/40"
+                />
               )}
             </Link>
           );

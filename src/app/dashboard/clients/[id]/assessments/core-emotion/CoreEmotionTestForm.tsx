@@ -79,7 +79,7 @@ export default function CoreEmotionTestForm({
     <div>
       {/* Progress */}
       <div className="mb-6">
-        <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+        <div className="mb-2 flex flex-col gap-1 text-xs text-text-muted min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
           <span>
             {currentPage + 1} / {totalPages} 페이지
           </span>
@@ -98,9 +98,9 @@ export default function CoreEmotionTestForm({
         {pageTypes.map((emotionType) => (
           <div
             key={emotionType.id}
-            className="bg-card rounded-[var(--radius-md)] border border-border-lighter p-5"
+            className="rounded-[var(--radius-md)] border border-border-lighter bg-card p-4 sm:p-5"
           >
-            <div className="flex items-center gap-2 mb-4">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
               <span className="w-7 h-7 rounded-full bg-primary-pale flex items-center justify-center text-xs font-bold text-primary">
                 {emotionType.id}
               </span>
@@ -127,7 +127,7 @@ export default function CoreEmotionTestForm({
                         <button
                           key={item}
                           onClick={() => toggleItem(emotionType.id, item)}
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs rounded-full border transition-all cursor-pointer ${
+                          className={`inline-flex min-h-8 items-center gap-1 rounded-full border px-3 py-1.5 text-xs transition-all cursor-pointer ${
                             selected
                               ? "bg-primary text-white border-primary"
                               : "bg-bg border-border-lighter hover:border-primary/40 text-text-muted"
@@ -147,11 +147,11 @@ export default function CoreEmotionTestForm({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between mt-6 gap-3">
+      <div className="mt-6 flex flex-col-reverse gap-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
         <button
           onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
           disabled={currentPage === 0}
-          className="flex items-center gap-1 px-4 py-2.5 text-sm rounded-[var(--radius-sm)] border border-border-light hover:bg-bg-warm transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+          className="flex w-full items-center justify-center gap-1 rounded-[var(--radius-sm)] border border-border-light px-4 py-2.5 text-sm transition-colors hover:bg-bg-warm disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer min-[420px]:w-auto"
         >
           <ChevronLeft size={16} />
           이전
@@ -162,7 +162,7 @@ export default function CoreEmotionTestForm({
             onClick={() =>
               setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
             }
-            className="flex items-center gap-1 px-4 py-2.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors cursor-pointer"
+            className="flex w-full items-center justify-center gap-1 rounded-[var(--radius-sm)] bg-primary px-4 py-2.5 text-sm text-white transition-colors hover:bg-primary-dark cursor-pointer min-[420px]:w-auto"
           >
             다음
             <ChevronRight size={16} />
@@ -171,7 +171,7 @@ export default function CoreEmotionTestForm({
           <button
             onClick={handleSubmit}
             disabled={totalSelected === 0 || isPending}
-            className="px-6 py-2.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full rounded-[var(--radius-sm)] bg-primary px-6 py-2.5 text-sm text-white transition-colors hover:bg-primary-dark disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer min-[420px]:w-auto"
           >
             {isPending ? "결과 저장 중입니다..." : "검사 완료"}
           </button>

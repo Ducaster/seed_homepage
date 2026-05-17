@@ -57,13 +57,13 @@ export default function ClientDetail({
         내담자 목록
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
         {/* Left Column */}
         <div className="space-y-6">
           <GrowthStageCard sessionCount={client.sessions.length} />
 
           {/* Client Info */}
-          <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-6">
+          <div className="rounded-[var(--radius-lg)] bg-card p-4 shadow-[var(--shadow-sm)] sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading font-bold text-text">내담자 정보</h3>
               <button
@@ -104,7 +104,7 @@ export default function ClientDetail({
                   placeholder="이메일"
                   className="w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-border-light bg-bg focus:outline-none focus:border-primary"
                 />
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <input
                     name="birthDate"
                     type="date"
@@ -207,10 +207,10 @@ export default function ClientDetail({
         </div>
 
         {/* Right Column */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-5 lg:col-span-2 lg:space-y-6">
           {/* Sessions */}
-          <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="rounded-[var(--radius-lg)] bg-card p-4 shadow-[var(--shadow-sm)] sm:p-6">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2">
                 <Calendar size={18} className="text-primary" />
                 <h2 className="font-heading text-lg font-bold text-text">
@@ -222,7 +222,7 @@ export default function ClientDetail({
               </div>
               <button
                 onClick={() => setShowSessionForm(!showSessionForm)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors cursor-pointer"
+                className="flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-primary px-3 py-2 text-sm text-white transition-colors hover:bg-primary-dark cursor-pointer sm:w-auto sm:py-1.5"
               >
                 {showSessionForm ? <X size={14} /> : <Plus size={14} />}
                 {showSessionForm ? "취소" : "새 기록"}
@@ -232,10 +232,10 @@ export default function ClientDetail({
             {showSessionForm && (
               <form
                 action={addSession}
-                className="mb-5 p-4 bg-bg rounded-[var(--radius-md)] space-y-3"
+                className="mb-5 space-y-3 rounded-[var(--radius-md)] bg-bg p-4"
               >
                 <input type="hidden" name="clientId" value={client.id} />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label className="block text-xs text-text-muted mb-1">
                       날짜
@@ -398,7 +398,7 @@ export default function ClientDetail({
           {/* Assessment Curriculum Link */}
           <Link
             href={`/dashboard/clients/${client.id}/assessments`}
-            className="flex items-center justify-between p-5 bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] border border-primary/15 hover:border-primary/40 hover:shadow-[var(--shadow-md)] transition-all group"
+            className="group flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-primary/15 bg-card p-4 shadow-[var(--shadow-sm)] transition-all hover:border-primary/40 hover:shadow-[var(--shadow-md)] sm:p-5"
           >
             <div className="flex items-center gap-3">
               <span className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
@@ -420,8 +420,8 @@ export default function ClientDetail({
           </Link>
 
           {/* Assessments */}
-          <div className="bg-card rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-6">
-            <div className="flex items-center justify-between mb-5">
+          <div className="rounded-[var(--radius-lg)] bg-card p-4 shadow-[var(--shadow-sm)] sm:p-6">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2">
                 <ClipboardList size={18} className="text-primary" />
                 <h2 className="font-heading text-lg font-bold text-text">
@@ -433,7 +433,7 @@ export default function ClientDetail({
               </div>
               <button
                 onClick={() => setShowAssessmentForm(!showAssessmentForm)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-[var(--radius-sm)] bg-primary text-white hover:bg-primary-dark transition-colors cursor-pointer"
+                className="flex w-full items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-primary px-3 py-2 text-sm text-white transition-colors hover:bg-primary-dark cursor-pointer sm:w-auto sm:py-1.5"
               >
                 {showAssessmentForm ? <X size={14} /> : <Plus size={14} />}
                 {showAssessmentForm ? "취소" : "새 검사"}
@@ -443,10 +443,10 @@ export default function ClientDetail({
             {showAssessmentForm && (
               <form
                 action={addAssessment}
-                className="mb-5 p-4 bg-bg rounded-[var(--radius-md)] space-y-3"
+                className="mb-5 space-y-3 rounded-[var(--radius-md)] bg-bg p-4"
               >
                 <input type="hidden" name="clientId" value={client.id} />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label className="block text-xs text-text-muted mb-1">
                       검사 도구
@@ -619,9 +619,11 @@ export default function ClientDetail({
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between">
-      <span className="text-text-muted">{label}</span>
-      <span className="text-text font-medium">{value}</span>
+    <div className="flex flex-col gap-0.5 min-[420px]:flex-row min-[420px]:justify-between min-[420px]:gap-3">
+      <span className="shrink-0 text-text-muted">{label}</span>
+      <span className="break-all text-text font-medium min-[420px]:text-right">
+        {value}
+      </span>
     </div>
   );
 }

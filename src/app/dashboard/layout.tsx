@@ -12,7 +12,9 @@ export default function DashboardLayout({
   return (
     <>
       <DashboardNav />
-      <div className="max-w-[1200px] mx-auto px-6 py-8">{children}</div>
+      <div className="mx-auto max-w-[1200px] overflow-x-hidden px-4 py-5 sm:px-6 sm:py-8">
+        {children}
+      </div>
     </>
   );
 }

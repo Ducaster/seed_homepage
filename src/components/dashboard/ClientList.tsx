@@ -24,17 +24,22 @@ export function ClientList({
 
   return (
     <section className="rounded-[var(--radius-lg)] border border-seed-earth-200 bg-white shadow-[var(--shadow-sm)]">
-      <div className="flex items-start justify-between gap-4 border-b border-seed-earth-100 px-5 py-4 sm:px-6">
-        <div>
+      <div
+        data-testid="client-list-header"
+        className="flex flex-col items-stretch gap-4 border-b border-seed-earth-100 px-4 py-4 sm:flex-row sm:items-start sm:justify-between sm:px-6"
+      >
+        <div className="min-w-0">
           <h2 className="font-heading text-lg font-bold text-seed-earth-900">
             {title}
           </h2>
-          <p className="mt-1 text-sm text-text-muted">{resolvedDescription}</p>
+          <p className="mt-1 break-keep text-sm text-text-muted">
+            {resolvedDescription}
+          </p>
         </div>
         {showHeaderAction && (
           <Link
             href="/dashboard/clients/new"
-            className="inline-flex shrink-0 items-center gap-2 rounded-[var(--radius-sm)] bg-seed-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-seed-green-700"
+            className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-seed-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-seed-green-700 sm:w-auto"
           >
             <Plus size={16} />새 내담자 등록
           </Link>
@@ -42,7 +47,7 @@ export function ClientList({
       </div>
 
       {clients.length === 0 ? (
-        <div className="px-6 py-12 text-center">
+        <div className="px-4 py-10 text-center sm:px-6 sm:py-12">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-seed-green-50 text-seed-green-700">
             <Sprout size={28} />
           </div>
@@ -55,7 +60,7 @@ export function ClientList({
           </p>
           <Link
             href="/dashboard/clients/new"
-            className="mt-6 inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-seed-green-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-seed-green-700"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-seed-green-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-seed-green-700 sm:w-auto"
           >
             <Plus size={16} />
             내담자 등록하기
@@ -82,7 +87,8 @@ export function ClientList({
                 <Link
                   key={client.id}
                   href={`/dashboard/clients/${client.id}`}
-                  className="group grid gap-3 px-5 py-4 transition-colors hover:bg-seed-green-50/40 md:grid-cols-[1.5fr_1fr_0.7fr_1fr_32px] md:items-center md:gap-4"
+                  data-testid={`client-row-${client.id}`}
+                  className="group grid grid-cols-1 gap-3 px-4 py-4 transition-colors hover:bg-seed-green-50/40 sm:px-5 md:grid-cols-[1.5fr_1fr_0.7fr_1fr_32px] md:items-center md:gap-4"
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-seed-earth-200 bg-seed-earth-50 text-sm font-bold text-seed-green-700">
@@ -101,15 +107,24 @@ export function ClientList({
                     </div>
                   </div>
 
-                  <div className="text-sm text-text-muted">
+                  <div className="flex items-center justify-between gap-3 text-sm text-text-muted md:block">
+                    <span className="text-xs font-medium text-text-light md:hidden">
+                      프로그램
+                    </span>
                     {client.program || "프로그램 미지정"}
                   </div>
 
-                  <div className="text-sm font-medium text-seed-earth-900">
+                  <div className="flex items-center justify-between gap-3 text-sm font-medium text-seed-earth-900 md:block">
+                    <span className="text-xs font-medium text-text-light md:hidden">
+                      코칭
+                    </span>
                     {client.sessions.length}회
                   </div>
 
-                  <div className="text-sm text-text-muted">
+                  <div className="flex items-center justify-between gap-3 text-sm text-text-muted md:block">
+                    <span className="text-xs font-medium text-text-light md:hidden">
+                      최근 기록
+                    </span>
                     {lastSession ? lastSession.date : "기록 없음"}
                   </div>
 
